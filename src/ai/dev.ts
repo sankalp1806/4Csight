@@ -9,3 +9,5 @@ import '@/ai/flows/generate-consumer-analysis.ts';
 import '@/ai/flows/generate-cultural-analysis.ts';
 import '@/ai/flows/generate-category-analysis.ts';
 import '@/ai/flows/analyze-competitor.ts';
+import '@/ai/flows/generate-detailed-analysis.ts';
+import '@/ai/flows/generate-swot-analysis.ts';

@@ -27,6 +27,8 @@ import {
   Star,
   TrendingUp,
   TrendingDown,
+  Check,
+  X,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -38,6 +40,17 @@ import { generate4CsAnalysis } from '@/ai/flows/generate-4cs-analysis';
 import { analyzeCompetitor } from '@/ai/flows/analyze-competitor';
 import type { Competitor } from '@/ai/schemas/4cs-analysis-schema';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { generateDetailedAnalysis } from '@/ai/flows/generate-detailed-analysis';
+import type { DetailedAnalysis } from '@/ai/schemas/detailed-analysis-schema';
+import { generateSwotAnalysis } from '@/ai/flows/generate-swot-analysis';
+import type { SwotAnalysis } from '@/ai/schemas/swot-analysis-schema';
 
 const competitorFormSchema = z.object({
   name: z.string().min(1, 'Competitor name is required.'),
@@ -48,11 +61,19 @@ const competitorFormSchema = z.object({
 });
 type CompetitorFormValues = z.infer<typeof competitorFormSchema>;
 
+type AnalysisType = 'detailed' | 'swot' | null;
+
 function CompetitiveAnalysisContent() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const [competitors, setCompetitors] = useState<Competitor[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
+  const [selectedCompetitor, setSelectedCompetitor] = useState<Competitor | null>(null);
+  const [analysisType, setAnalysisType] = useState<AnalysisType>(null);
+  const [analysisResult, setAnalysisResult] = useState<DetailedAnalysis | SwotAnalysis | null>(null);
+  const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
 
   const brandName = searchParams.get('brandName') || '';
 
@@ -91,6 +112,34 @@ function CompetitiveAnalysisContent() {
     setCompetitors((prev) => [newCompetitor, ...prev]);
   };
 
+  const handleAnalysisClick = async (competitor: Competitor, type: NonNullable<AnalysisType>) => {
+    setSelectedCompetitor(competitor);
+    setAnalysisType(type);
+    setIsAnalysisDialogOpen(true);
+    setIsAnalysisLoading(true);
+    setAnalysisResult(null);
+    
+    try {
+      let result;
+      if (type === 'detailed') {
+        result = await generateDetailedAnalysis({ brandNameToAnalyze: brandName, competitorName: competitor.name });
+      } else if (type === 'swot') {
+        result = await generateSwotAnalysis({ brandNameToAnalyze: brandName, competitorName: competitor.name });
+      }
+      setAnalysisResult(result);
+    } catch (error) {
+      console.error(`Failed to generate ${type} analysis:`, error);
+      toast({
+        title: 'Error',
+        description: `Failed to generate ${type} analysis.`,
+        variant: 'destructive',
+      });
+      setIsAnalysisDialogOpen(false);
+    } finally {
+      setIsAnalysisLoading(false);
+    }
+  };
+
   const counts = React.useMemo(() => {
     const direct = competitors.filter((c) => c.type === 'Direct').length;
     const indirect = competitors.filter((c) => c.type === 'Indirect').length;
@@ -103,7 +152,7 @@ function CompetitiveAnalysisContent() {
     return <AnalysisSkeleton />;
   }
 
-  if (competitors.length === 0) {
+  if (competitors.length === 0 && !loading) {
     return (
       <div className="text-center py-10">
         <p className="text-muted-foreground">No analysis data available.</p>
@@ -181,7 +230,12 @@ function CompetitiveAnalysisContent() {
             </div>
             <div className="space-y-6">
               {competitors.map((competitor, index) => (
-                <IdentifiedCompetitorCard key={index} {...competitor} />
+                <IdentifiedCompetitorCard 
+                  key={index} 
+                  competitor={competitor} 
+                  onDetailedClick={() => handleAnalysisClick(competitor, 'detailed')}
+                  onSwotClick={() => handleAnalysisClick(competitor, 'swot')}
+                />
               ))}
             </div>
           </section>
@@ -194,6 +248,14 @@ function CompetitiveAnalysisContent() {
           <AIPoweredResearchCard />
         </aside>
       </div>
+      <AnalysisDialog 
+        isOpen={isAnalysisDialogOpen}
+        setIsOpen={setIsAnalysisDialogOpen}
+        isLoading={isAnalysisLoading}
+        competitorName={selectedCompetitor?.name || ''}
+        analysisType={analysisType}
+        analysisResult={analysisResult}
+      />
     </>
   );
 }
@@ -223,7 +285,7 @@ const CompetitorTypeCard = ({
   </Card>
 );
 
-const IdentifiedCompetitorCard = (competitor: Competitor) => {
+const IdentifiedCompetitorCard = ({ competitor, onDetailedClick, onSwotClick }: { competitor: Competitor, onDetailedClick: () => void, onSwotClick: () => void }) => {
   const typeColors = {
     Direct: 'bg-red-100 text-red-700',
     Indirect: 'bg-yellow-100 text-yellow-700',
@@ -284,10 +346,10 @@ const IdentifiedCompetitorCard = (competitor: Competitor) => {
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={onDetailedClick}>
                 <Target className="mr-1.5 h-4 w-4" /> Detailed Analysis
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={onSwotClick}>
                 <FileText className="mr-1.5 h-4 w-4" /> SWOT Analysis
               </Button>
             </div>
@@ -328,7 +390,7 @@ function AddNewCompetitorCard({
         brandNameToAnalyze: brandNameToAnalyze,
         competitorName: data.name,
         competitorType: data.type,
-        competitorDescription: data.description || '',
+        competitorDescription: data.description || undefined,
       });
       onCompetitorAdded(result);
       reset();
@@ -504,6 +566,98 @@ const AnalysisSkeleton = () => (
   </>
 );
 
+
+function AnalysisDialog({ isOpen, setIsOpen, isLoading, competitorName, analysisType, analysisResult }: {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  isLoading: boolean;
+  competitorName: string;
+  analysisType: AnalysisType;
+  analysisResult: DetailedAnalysis | SwotAnalysis | null;
+}) {
+  const isSwot = analysisType === 'swot' && analysisResult && 'strengths' in analysisResult;
+  const isDetailed = analysisType === 'detailed' && analysisResult && 'companyBackground' in analysisResult;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">
+            {analysisType === 'detailed' ? 'Detailed Analysis' : 'SWOT Analysis'} for <span className="text-primary">{competitorName}</span>
+          </DialogTitle>
+          <DialogDescription>
+            AI-generated analysis based on publicly available data.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="mt-4 max-h-[60vh] overflow-y-auto pr-4">
+          {isLoading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-8 w-1/3" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-8 w-1/3" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+          ) : (
+            <>
+              {isDetailed && <DetailedAnalysisContent analysis={analysisResult as DetailedAnalysis} />}
+              {isSwot && <SwotAnalysisContent analysis={analysisResult as SwotAnalysis} />}
+            </>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DetailedAnalysisContent({ analysis }: { analysis: DetailedAnalysis }) {
+  const sections = [
+    { title: 'Company Background', content: analysis.companyBackground },
+    { title: 'Products & Services', content: analysis.productsAndServices },
+    { title: 'Target Audience', content: analysis.targetAudience },
+    { title: 'Marketing Strategy', content: analysis.marketingStrategy },
+    { title: 'Key Differentiators', content: analysis.keyDifferentiators },
+    { title: 'Recent News', content: analysis.recentNews },
+  ];
+  return (
+    <div className="space-y-6">
+      {sections.map(section => (
+        <div key={section.title}>
+          <h4 className="text-lg font-semibold mb-2">{section.title}</h4>
+          <p className="text-sm text-muted-foreground">{section.content}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SwotAnalysisContent({ analysis }: { analysis: SwotAnalysis }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <SwotCategory title="Strengths" items={analysis.strengths} icon={<Check className="w-5 h-5 text-green-500" />} color="bg-green-50" />
+      <SwotCategory title="Weaknesses" items={analysis.weaknesses} icon={<X className="w-5 h-5 text-red-500" />} color="bg-red-50" />
+      <SwotCategory title="Opportunities" items={analysis.opportunities} icon={<Lightbulb className="w-5 h-5 text-blue-500" />} color="bg-blue-50" />
+      <SwotCategory title="Threats" items={analysis.threats} icon={<TrendingDown className="w-5 h-5 text-orange-500" />} color="bg-orange-50" />
+    </div>
+  );
+}
+
+function SwotCategory({ title, items, icon, color }: { title: string, items: string[], icon: React.ReactNode, color: string }) {
+  return (
+    <div className={`p-4 rounded-lg ${color}`}>
+      <h4 className="flex items-center gap-2 font-semibold text-lg mb-3">
+        {icon}
+        {title}
+      </h4>
+      <ul className="space-y-2 list-disc list-inside text-sm text-muted-foreground">
+        {items.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+
 export default function CompetitiveAnalysisPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -523,5 +677,3 @@ export default function CompetitiveAnalysisPage() {
     </div>
   );
 }
-
-    
