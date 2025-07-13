@@ -57,13 +57,11 @@ export function RecentProjectCard({ project, onReportClick }: RecentProjectCardP
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4 mt-4 sm:mt-6">
-          <Link href={viewLink}>
-            <Button variant="outline" size="sm" asChild>
-              <a>
-                <Eye className="mr-1.5 h-4 w-4" /> View
-              </a>
-            </Button>
-          </Link>
+          <Button asChild variant="outline" size="sm">
+            <Link href={viewLink}>
+              <Eye className="mr-1.5 h-4 w-4" /> View
+            </Link>
+          </Button>
           <Button 
             variant="outline" 
             size="sm" 
