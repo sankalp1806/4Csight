@@ -16,6 +16,7 @@ import { Menu } from 'lucide-react';
 import React, { useState } from "react";
 import { NewAnalysisDialog } from "@/components/new-analysis-dialog";
 import { generate4CsAnalysis, Generate4CsAnalysisInput, Generate4CsAnalysisOutput } from "@/ai/flows/generate-4cs-analysis";
+import { useRouter } from "next/navigation";
 
 const analysisTypes = [
   {
@@ -48,11 +49,9 @@ const analysisTypes = [
   }
 ];
 
-export interface RecentProject extends Generate4CsAnalysisOutput {
+export interface RecentProject extends Generate4CsAnalysisInput {
   id: string;
   title: string;
-  description: string;
-  tag: string;
   date: string;
   progress: number;
   status: 'completed' | 'in-progress';
@@ -61,26 +60,30 @@ export interface RecentProject extends Generate4CsAnalysisOutput {
 export default function DashboardPage() {
   const [recentProjects, setRecentProjects] = useState<RecentProject[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const router = useRouter();
 
   const handleNewProject = async (values: Generate4CsAnalysisInput) => {
-    try {
-      const analysis = await generate4CsAnalysis(values);
-      const newProject: RecentProject = {
-        id: new Date().toISOString(),
-        title: `${values.brandName} 4Cs Analysis`,
-        description: values.description,
-        tag: values.industry,
-        date: new Date().toLocaleDateString(),
-        progress: 100,
-        status: 'completed',
-        ...analysis,
-      };
-      setRecentProjects(prev => [newProject, ...prev]);
-      setIsDialogOpen(false);
-    } catch (error) {
-      console.error("Failed to generate analysis:", error);
-      // Here you could show a toast notification to the user
-    }
+    const newProject: RecentProject = {
+      id: new Date().toISOString(),
+      title: `${values.brandName} 4Cs Analysis`,
+      description: values.description,
+      industry: values.industry,
+      brandName: values.brandName,
+      date: new Date().toLocaleDateString(),
+      progress: 100,
+      status: 'completed',
+    };
+    setRecentProjects(prev => [newProject, ...prev]);
+    setIsDialogOpen(false);
+    
+    // Navigate to competitive analysis page with parameters
+    const queryParams = new URLSearchParams({
+      brandName: values.brandName,
+      description: values.description,
+      industry: values.industry,
+    }).toString();
+    
+    router.push(`/competitive-analysis?${queryParams}`);
   };
 
   return (
@@ -136,7 +139,7 @@ export default function DashboardPage() {
               <div className="space-y-4 sm:space-y-6">
                 {recentProjects.length > 0 ? (
                   recentProjects.map((project, index) => (
-                    <RecentProjectCard key={index} {...project} />
+                    <RecentProjectCard key={index} {...project} tag={project.industry} />
                   ))
                 ) : (
                   <div className="text-center py-10 border-2 border-dashed rounded-lg">

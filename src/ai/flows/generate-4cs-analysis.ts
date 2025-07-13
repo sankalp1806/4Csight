@@ -10,15 +10,26 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const Generate4CsAnalysisInputSchema = z.object({
+export const Generate4CsAnalysisInputSchema = z.object({
   brandName: z.string().describe('The name of the brand or business to analyze.'),
   description: z.string().describe('A description of the project, business model, and objectives.'),
   industry: z.string().describe('The industry the business operates in.'),
 });
 export type Generate4CsAnalysisInput = z.infer<typeof Generate4CsAnalysisInputSchema>;
 
+export const CompetitorSchema = z.object({
+  name: z.string().describe('The name of the competitor.'),
+  type: z.enum(['Direct', 'Indirect', 'Substitute']).describe('The type of competitor.'),
+  marketShare: z.number().describe('Estimated market share percentage.'),
+  rating: z.number().min(0).max(5).describe('A competitive rating from 1 to 5.'),
+  strengths: z.array(z.string()).describe('A list of key strengths.'),
+  weaknesses: z.array(z.string()).describe('A list of key weaknesses.'),
+});
+export type Competitor = z.infer<typeof CompetitorSchema>;
+
+
 const Generate4CsAnalysisOutputSchema = z.object({
-  competition: z.string().describe('Analysis of the competitive landscape.'),
+  competition: z.array(CompetitorSchema).describe('A list of competitors with their analysis.'),
   culture: z.string().describe('Analysis of relevant cultural trends and alignment.'),
   consumer: z.string().describe('Analysis of the target consumer segments.'),
   category: z.string().describe('Analysis of the product or service category.'),
@@ -46,7 +57,7 @@ const prompt = ai.definePrompt({
   1.  **Perform Web Searches:** Use your search capabilities to find up-to-date information about the brand, its competitors, the specified industry, cultural trends, and consumer behavior.
   2.  **Synthesize Information:** Combine the information from your web searches with the user-provided description and industry.
   3.  **Generate 4Cs Analysis:** Provide a comprehensive analysis covering the following four areas:
-      -   **Competition:** Analyze the competitive landscape, including direct and indirect competitors, their strategies, market share, strengths, and weaknesses. Use web search to identify key competitors if not provided.
+      -   **Competition:** Analyze the competitive landscape. Identify at least 2-3 of each type of competitor (Direct, Indirect, Substitute) if possible. For each competitor, provide their name, type, estimated market share, a competitive rating (1-5), and a list of their key strengths and weaknesses. Use web search to identify key competitors and gather this information.
       -   **Culture:** Examine prevailing cultural trends, societal values, and lifestyle shifts that could impact the brand. Use web search to identify recent and relevant cultural movements.
       -   **Consumer:** Understand the target audience segments, their needs, motivations, online behavior, and perceptions. Use web search to find recent consumer studies or articles.
       -   **Category:** Define and analyze the product or service category, including market size, growth trends, and key drivers of demand. Use web search for the latest market data and reports.
