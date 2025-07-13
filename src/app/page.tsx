@@ -149,7 +149,7 @@ export default function DashboardPage() {
           </div>
           
           <aside className="space-y-8">
-             <QuickStats />
+             <QuickStats projects={recentProjects} />
              <AIPoweredInsights />
           </aside>
         </div>

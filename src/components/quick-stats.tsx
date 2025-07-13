@@ -2,8 +2,17 @@
 'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Eye } from 'lucide-react';
+import type { RecentProject } from '@/app/page';
 
-export function QuickStats() {
+interface QuickStatsProps {
+  projects: RecentProject[];
+}
+
+export function QuickStats({ projects }: QuickStatsProps) {
+  const totalProjects = projects.length;
+  const completedProjects = projects.filter(p => p.status === 'completed').length;
+  const inProgressProjects = projects.filter(p => p.status === 'in-progress').length;
+
   return (
     <Card>
       <CardHeader className="p-4 sm:p-6">
@@ -14,15 +23,15 @@ export function QuickStats() {
       </CardHeader>
       <CardContent className="p-4 sm:p-6 pt-0 grid grid-cols-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 gap-4">
         <div className="text-center">
-          <p className="text-3xl sm:text-4xl font-bold text-primary">2</p>
+          <p className="text-3xl sm:text-4xl font-bold text-primary">{totalProjects}</p>
           <p className="text-xs sm:text-sm text-muted-foreground">Total Projects</p>
         </div>
         <div className="text-center">
-          <p className="text-3xl sm:text-4xl font-bold text-green-500">1</p>
+          <p className="text-3xl sm:text-4xl font-bold text-green-500">{completedProjects}</p>
           <p className="text-xs sm:text-sm text-muted-foreground">Completed</p>
         </div>
         <div className="text-center">
-          <p className="text-3xl sm:text-4xl font-bold text-blue-500">1</p>
+          <p className="text-3xl sm:text-4xl font-bold text-blue-500">{inProgressProjects}</p>
           <p className="text-xs sm:text-sm text-muted-foreground">In Progress</p>
         </div>
       </CardContent>
