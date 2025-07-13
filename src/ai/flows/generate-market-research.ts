@@ -22,14 +22,18 @@ const prompt = ai.definePrompt({
   name: 'generateMarketResearchPrompt',
   input: { schema: MarketResearchInputSchema },
   output: { schema: MarketResearchSchema },
-  prompt: `You are a market research analyst. Provide a concise, high-level market research summary for the brand '{{{brandName}}}' which operates in the '{{{industry}}}' industry.
+  prompt: `You are a market research analyst. Provide a concise, high-level category analysis summary for the brand '{{{brandName}}}' which operates in the '{{{industry}}}' industry.
   
   Business Description: {{{description}}}
 
   Instructions:
-  1.  **Perform Web Searches:** Use your search capabilities to find current data on the market.
-  2.  **Synthesize Findings:** Generate a brief, easy-to-read summary that covers the most critical aspects of the market relevant to the user's business. This should touch upon market size/trends, key consumer behaviors, and the competitive environment.
-  3.  **Keep it Concise:** The summary should be a few paragraphs long.
+  1.  **Perform Web Searches:** Use your search capabilities to find current data on the specified market category.
+  2.  **Synthesize Findings:** Generate a brief, easy-to-read summary that covers the most critical aspects of the category relevant to the user's business. This should include:
+      -   A brief overview of the category's definition and scope.
+      -   Key market size and growth trends.
+      -   A mention of the most significant market segments.
+      -   The primary factors driving demand within the category.
+  3.  **Keep it Concise:** The summary should be a few paragraphs long, providing a quick snapshot of the category's landscape.
 
   Return the result in the required JSON format.
   `,
