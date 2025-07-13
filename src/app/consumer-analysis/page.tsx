@@ -50,6 +50,7 @@ import Image from 'next/image';
 import { DemographicsDialog } from '@/components/demographics-dialog';
 import { PsychographicsDialog } from '@/components/psychographics-dialog';
 import { BehavioralPatternsDialog } from '@/components/behavioral-patterns-dialog';
+import { CustomerJourneyDialog } from '@/components/customer-journey-dialog';
 
 type AnalysisType = 'deep-dive' | 'journey-map' | 'market-research' | 'persona-generator' | null;
 
@@ -64,6 +65,8 @@ function ConsumerAnalysisContent() {
   const [isDemographicsDialogOpen, setIsDemographicsDialogOpen] = useState(false);
   const [isPsychographicsDialogOpen, setIsPsychographicsDialogOpen] = useState(false);
   const [isBehavioralPatternsDialogOpen, setIsBehavioralPatternsDialogOpen] = useState(false);
+  const [isCustomerJourneyDialogOpen, setIsCustomerJourneyDialogOpen] = useState(false);
+
 
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<CustomerSegment | null>(null);
@@ -201,7 +204,8 @@ function ConsumerAnalysisContent() {
       progress: analysis.topLevelMetrics.customerJourney,
       icon: <Map className="h-6 w-6" />,
       color: 'text-orange-500',
-      gradient: 'from-orange-50 to-orange-100/10'
+      gradient: 'from-orange-50 to-orange-100/10',
+      onClick: () => setIsCustomerJourneyDialogOpen(true),
     },
   ];
 
@@ -347,6 +351,12 @@ function ConsumerAnalysisContent() {
         onOpenChange={setIsBehavioralPatternsDialogOpen}
         brandName={brandName}
         industry={industry}
+      />
+      <CustomerJourneyDialog
+        open={isCustomerJourneyDialogOpen}
+        onOpenChange={setIsCustomerJourneyDialogOpen}
+        journeyMap={analysis.journeyMap}
+        brandName={brandName}
       />
     </>
   );

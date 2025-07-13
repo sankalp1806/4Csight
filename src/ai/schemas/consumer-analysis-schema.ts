@@ -61,10 +61,19 @@ export const KeyInsightSchema = z.object({
 });
 export type KeyInsight = z.infer<typeof KeyInsightSchema>;
 
+export const JourneyStageSchema = z.object({
+    stage: z.string().describe("The name of the journey stage (e.g., 'Awareness', 'Consideration')."),
+    actions: z.string().describe("What the customer is doing during this stage."),
+    touchpoints: z.string().describe("Where the customer interacts with the brand or similar brands."),
+    feelings: z.string().describe("The customer's likely emotions or thoughts at this stage.")
+});
+export type JourneyStage = z.infer<typeof JourneyStageSchema>;
+
 export const GenerateConsumerAnalysisOutputSchema = z.object({
   topLevelMetrics: TopLevelMetricSchema,
   customerSegments: z.array(CustomerSegmentSchema),
   keyInsights: z.array(KeyInsightSchema),
+  journeyMap: z.array(JourneyStageSchema).describe('An array of objects, each representing a stage in the customer journey.'),
 });
 export type GenerateConsumerAnalysisOutput = z.infer<
   typeof GenerateConsumerAnalysisOutputSchema
