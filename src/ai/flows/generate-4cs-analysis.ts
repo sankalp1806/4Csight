@@ -12,7 +12,8 @@ import {z} from 'genkit';
 
 const Generate4CsAnalysisInputSchema = z.object({
   brandName: z.string().describe('The name of the brand or business to analyze.'),
-  emphasis: z.enum(['Competition', 'Culture', 'Consumer', 'Category']).optional().describe('The category to emphasize'),
+  description: z.string().describe('A description of the project, business model, and objectives.'),
+  industry: z.string().describe('The industry the business operates in.'),
 });
 export type Generate4CsAnalysisInput = z.infer<typeof Generate4CsAnalysisInputSchema>;
 
@@ -36,8 +37,8 @@ const prompt = ai.definePrompt({
   prompt: `You are a strategic marketing expert specializing in 4Cs analysis (Competition, Culture, Consumer, Category).
 
   Analyze the brand or business: {{{brandName}}}.
-
-  Here's an optional emphasis on one of the 4Cs pillars provided by the user: {{{emphasis}}}
+  Business Description: {{{description}}}
+  Industry: {{{industry}}}
 
   Provide a comprehensive 4Cs analysis, including actionable insights and a deep understanding of the brand's current market position and potential opportunities. The analysis should include:
 

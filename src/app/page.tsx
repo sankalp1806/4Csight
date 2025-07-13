@@ -15,7 +15,7 @@ import {
 import { Menu } from 'lucide-react';
 import React, { useState } from "react";
 import { NewAnalysisDialog } from "@/components/new-analysis-dialog";
-import { generate4CsAnalysis, Generate4CsAnalysisOutput } from "@/ai/flows/generate-4cs-analysis";
+import { generate4CsAnalysis, Generate4CsAnalysisInput, Generate4CsAnalysisOutput } from "@/ai/flows/generate-4cs-analysis";
 
 const analysisTypes = [
   {
@@ -62,14 +62,14 @@ export default function DashboardPage() {
   const [recentProjects, setRecentProjects] = useState<RecentProject[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleNewProject = async (values: { brandName: string; emphasis?: 'Competition' | 'Culture' | 'Consumer' | 'Category' }) => {
+  const handleNewProject = async (values: Generate4CsAnalysisInput) => {
     try {
       const analysis = await generate4CsAnalysis(values);
       const newProject: RecentProject = {
         id: new Date().toISOString(),
         title: `${values.brandName} 4Cs Analysis`,
-        description: `Full strategic analysis for ${values.brandName}`,
-        tag: values.emphasis || 'General',
+        description: values.description,
+        tag: values.industry,
         date: new Date().toLocaleDateString(),
         progress: 100,
         status: 'completed',
