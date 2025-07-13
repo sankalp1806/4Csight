@@ -340,17 +340,17 @@ const MetricCard = ({
   color: string;
   gradient: string;
 }) => (
-  <Card className={`border-none bg-gradient-to-br ${gradient}`}>
-    <CardContent className="p-4">
+  <Card className={`border-none bg-gradient-to-br ${gradient} p-4 sm:p-6 flex flex-col justify-between`}>
+    <div>
       <div className={`p-2 inline-block rounded-lg bg-white/50 ${color}`}>{icon}</div>
-      <h3 className="text-md font-semibold mt-4">{title}</h3>
+      <h3 className="text-md sm:text-lg font-semibold mt-4">{title}</h3>
       <p className="text-muted-foreground text-sm mt-1">{description}</p>
-      <div className="flex items-center gap-2 mt-4">
-        <span className="text-sm text-muted-foreground">Progress</span>
-        <Progress value={progress} className="h-2 flex-1" />
-        <span className="text-sm font-bold">{progress}%</span>
-      </div>
-    </CardContent>
+    </div>
+    <div className="flex items-center gap-2 mt-4">
+      <span className="text-sm text-muted-foreground">Progress</span>
+      <Progress value={progress} className="h-2 flex-1" />
+      <span className="text-sm font-bold">{progress}%</span>
+    </div>
   </Card>
 );
 
@@ -640,8 +640,8 @@ const AnalysisSkeleton = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {[...Array(4)].map((_, i) => (
         <Card key={i}>
-          <CardContent className="p-4">
-            <Skeleton className="h-24 w-full" />
+          <CardContent className="p-4 sm:p-6">
+            <Skeleton className="h-24 sm:h-32 w-full" />
           </CardContent>
         </Card>
       ))}
