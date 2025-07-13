@@ -49,6 +49,7 @@ import type { GeneratePersonasOutput, Persona } from '@/ai/schemas/persona-gener
 import Image from 'next/image';
 import { DemographicsDialog } from '@/components/demographics-dialog';
 import { PsychographicsDialog } from '@/components/psychographics-dialog';
+import { BehavioralPatternsDialog } from '@/components/behavioral-patterns-dialog';
 
 type AnalysisType = 'deep-dive' | 'journey-map' | 'market-research' | 'persona-generator' | null;
 
@@ -62,6 +63,7 @@ function ConsumerAnalysisContent() {
   const [isAddSegmentDialogOpen, setIsAddSegmentDialogOpen] = useState(false);
   const [isDemographicsDialogOpen, setIsDemographicsDialogOpen] = useState(false);
   const [isPsychographicsDialogOpen, setIsPsychographicsDialogOpen] = useState(false);
+  const [isBehavioralPatternsDialogOpen, setIsBehavioralPatternsDialogOpen] = useState(false);
 
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<CustomerSegment | null>(null);
@@ -190,7 +192,8 @@ function ConsumerAnalysisContent() {
       progress: analysis.topLevelMetrics.behavioralPatterns,
       icon: <BarChart2 className="h-6 w-6" />,
       color: 'text-green-500',
-      gradient: 'from-green-50 to-green-100/10'
+      gradient: 'from-green-50 to-green-100/10',
+      onClick: () => setIsBehavioralPatternsDialogOpen(true),
     },
     {
       title: 'Customer Journey',
@@ -336,6 +339,12 @@ function ConsumerAnalysisContent() {
       <PsychographicsDialog
         open={isPsychographicsDialogOpen}
         onOpenChange={setIsPsychographicsDialogOpen}
+        brandName={brandName}
+        industry={industry}
+      />
+       <BehavioralPatternsDialog
+        open={isBehavioralPatternsDialogOpen}
+        onOpenChange={setIsBehavioralPatternsDialogOpen}
         brandName={brandName}
         industry={industry}
       />

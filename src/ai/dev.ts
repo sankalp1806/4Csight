@@ -18,3 +18,4 @@ import '@/ai/flows/generate-market-research.ts';
 import '@/ai/flows/generate-personas.ts';
 import '@/ai/flows/generate-demographics.ts';
 import '@/ai/flows/generate-psychographics.ts';
+import '@/ai/flows/generate-behavioral-patterns.ts';
