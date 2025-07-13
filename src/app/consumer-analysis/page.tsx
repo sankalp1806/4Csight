@@ -105,7 +105,7 @@ function ConsumerAnalysisContent() {
       progress: analysis.topLevelMetrics.demographics,
       icon: <Users className="h-6 w-6" />,
       color: 'text-blue-500',
-      gradient: 'from-blue-50 to-blue-100'
+      gradient: 'from-blue-50 to-blue-100/10'
     },
     {
       title: 'Psychographics',
@@ -113,7 +113,7 @@ function ConsumerAnalysisContent() {
       progress: analysis.topLevelMetrics.psychographics,
       icon: <Puzzle className="h-6 w-6" />,
       color: 'text-purple-500',
-      gradient: 'from-purple-50 to-purple-100'
+      gradient: 'from-purple-50 to-purple-100/10'
     },
     {
       title: 'Behavioral Patterns',
@@ -121,7 +121,7 @@ function ConsumerAnalysisContent() {
       progress: analysis.topLevelMetrics.behavioralPatterns,
       icon: <BarChart2 className="h-6 w-6" />,
       color: 'text-green-500',
-      gradient: 'from-green-50 to-green-100'
+      gradient: 'from-green-50 to-green-100/10'
     },
     {
       title: 'Customer Journey',
@@ -129,7 +129,7 @@ function ConsumerAnalysisContent() {
       progress: analysis.topLevelMetrics.customerJourney,
       icon: <Map className="h-6 w-6" />,
       color: 'text-orange-500',
-      gradient: 'from-orange-50 to-orange-100'
+      gradient: 'from-orange-50 to-orange-100/10'
     },
   ];
 
