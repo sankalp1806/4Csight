@@ -44,8 +44,11 @@ import type { JourneyMap } from '@/ai/schemas/journey-map-schema';
 import { AddSegmentDialog } from '@/components/add-segment-dialog';
 import { generateMarketResearch } from '@/ai/flows/generate-market-research';
 import type { MarketResearch } from '@/ai/schemas/market-research-schema';
+import { generatePersonas } from '@/ai/flows/generate-personas';
+import type { GeneratePersonasOutput, Persona } from '@/ai/schemas/persona-generation-schema';
+import Image from 'next/image';
 
-type AnalysisType = 'deep-dive' | 'journey-map' | 'market-research' | null;
+type AnalysisType = 'deep-dive' | 'journey-map' | 'market-research' | 'persona-generator' | null;
 
 function ConsumerAnalysisContent() {
   const searchParams = useSearchParams();
@@ -59,7 +62,7 @@ function ConsumerAnalysisContent() {
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<CustomerSegment | null>(null);
   const [analysisType, setAnalysisType] = useState<AnalysisType>(null);
-  const [analysisResult, setAnalysisResult] = useState<DeepDiveAnalysis | JourneyMap | MarketResearch | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<DeepDiveAnalysis | JourneyMap | MarketResearch | GeneratePersonasOutput | null>(null);
   const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
 
   const brandName = searchParams.get('brandName') || '';
@@ -109,6 +112,8 @@ function ConsumerAnalysisContent() {
         result = await generateJourneyMap({ brandName, industry, description, segment });
       } else if (type === 'market-research') {
         result = await generateMarketResearch({ brandName, industry, description });
+      } else if (type === 'persona-generator' && analysis?.customerSegments) {
+        result = await generatePersonas({ brandName, industry, customerSegments: analysis.customerSegments });
       }
       setAnalysisResult(result);
     } catch (error) {
@@ -280,6 +285,8 @@ function ConsumerAnalysisContent() {
             <Button
               variant="secondary"
               className="mt-4 bg-white/90 hover:bg-white text-primary font-semibold text-sm"
+              onClick={() => handleAnalysisClick('persona-generator')}
+              disabled={!analysis || analysis.customerSegments.length === 0}
             >
               <Rocket className="mr-2 h-4 w-4" /> Generate Personas
             </Button>
@@ -440,11 +447,12 @@ function AnalysisDialog({ isOpen, setIsOpen, isLoading, segmentName, brandName, 
   segmentName: string;
   brandName: string;
   analysisType: AnalysisType;
-  analysisResult: DeepDiveAnalysis | JourneyMap | MarketResearch | null;
+  analysisResult: DeepDiveAnalysis | JourneyMap | MarketResearch | GeneratePersonasOutput | null;
 }) {
   const isDeepDive = analysisType === 'deep-dive' && analysisResult && 'detailedCharacteristics' in analysisResult;
   const isJourneyMap = analysisType === 'journey-map' && analysisResult && 'stages' in analysisResult;
   const isMarketResearch = analysisType === 'market-research' && analysisResult && 'summary' in analysisResult;
+  const isPersonaGenerator = analysisType === 'persona-generator' && analysisResult && 'personas' in analysisResult;
 
   const getTitle = () => {
       switch(analysisType) {
@@ -454,6 +462,8 @@ function AnalysisDialog({ isOpen, setIsOpen, isLoading, segmentName, brandName, 
             return <>Customer Journey Map for <span className="text-primary">{segmentName}</span></>
           case 'market-research':
             return <>Market Research for <span className="text-primary">{brandName}</span></>
+          case 'persona-generator':
+            return <>AI-Generated Personas for <span className="text-primary">{brandName}</span></>
           default:
             return 'Analysis'
       }
@@ -466,6 +476,8 @@ function AnalysisDialog({ isOpen, setIsOpen, isLoading, segmentName, brandName, 
           return 'AI-generated analysis for the selected customer segment.'
         case 'market-research':
           return 'AI-generated market research summary.'
+        case 'persona-generator':
+            return 'AI-generated personas based on your customer segments.'
         default:
           return ''
     }
@@ -474,24 +486,31 @@ function AnalysisDialog({ isOpen, setIsOpen, isLoading, segmentName, brandName, 
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-3xl">
+      <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle className="text-2xl">{getTitle()}</DialogTitle>
           <DialogDescription>{getDescription()}</DialogDescription>
         </DialogHeader>
-        <div className="mt-4 max-h-[60vh] overflow-y-auto pr-4">
+        <div className="mt-4 max-h-[70vh] overflow-y-auto pr-4">
           {isLoading ? (
             <div className="space-y-4">
-              <Skeleton className="h-8 w-1/3" />
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-8 w-1/3" />
-              <Skeleton className="h-20 w-full" />
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex gap-4 items-center">
+                    <Skeleton className="h-24 w-24 rounded-full" />
+                    <div className="space-y-2 flex-1">
+                        <Skeleton className="h-6 w-1/4" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                    </div>
+                </div>
+              ))}
             </div>
           ) : (
             <>
               {isDeepDive && <DeepDiveContent analysis={analysisResult as DeepDiveAnalysis} />}
               {isJourneyMap && <JourneyMapContent analysis={analysisResult as JourneyMap} />}
               {isMarketResearch && <MarketResearchContent analysis={analysisResult as MarketResearch} />}
+              {isPersonaGenerator && <PersonaGeneratorContent analysis={analysisResult as GeneratePersonasOutput} />}
             </>
           )}
         </div>
@@ -526,7 +545,7 @@ function JourneyMapContent({ analysis }: { analysis: JourneyMap }) {
   return (
     <div className="space-y-6">
       {analysis.stages.map((stage, index) => (
-        <div key={index} className="border-l-2 border-primary pl-6 relative pb-6">
+        <div key={index} className="border-l-2 border-primary pl-6 relative pb-6 last:pb-0">
            <div className="absolute -left-[11px] top-1 w-5 h-5 bg-primary rounded-full border-4 border-background"></div>
            <h4 className="font-semibold text-lg">{stage.stage}</h4>
            <div className="mt-2">
@@ -559,7 +578,52 @@ function MarketResearchContent({ analysis }: { analysis: MarketResearch }) {
         </div>
       </div>
     );
-  }
+}
+
+function PersonaGeneratorContent({ analysis }: { analysis: GeneratePersonasOutput }) {
+  return (
+    <div className="space-y-8">
+      {analysis.personas.map((persona, index) => (
+        <Card key={index} className="border-none bg-gradient-to-br from-card to-muted/20 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex flex-col items-center text-center md:col-span-1">
+                <Image 
+                    src={persona.avatarDataUri} 
+                    alt={`Avatar of ${persona.name}`}
+                    width={150}
+                    height={150}
+                    className="rounded-full object-cover border-4 border-primary/20 shadow-lg"
+                    data-ai-hint="person"
+                />
+                <h3 className="text-xl font-bold mt-4">{persona.name}</h3>
+                <p className="text-sm text-muted-foreground">{persona.segmentName}</p>
+              </div>
+              <div className="md:col-span-2 space-y-4">
+                  <div>
+                      <h4 className="font-semibold text-primary">Story</h4>
+                      <p className="text-sm text-muted-foreground italic">"{persona.story}"</p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <h4 className="font-semibold text-primary">Goals</h4>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 mt-1">
+                            {persona.goals.map((goal, i) => <li key={i}>{goal}</li>)}
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-semibold text-primary">Frustrations</h4>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 mt-1">
+                            {persona.frustrations.map((frustration, i) => <li key={i}>{frustration}</li>)}
+                        </ul>
+                    </div>
+                  </div>
+              </div>
+            </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
 
 const AnalysisSkeleton = () => (
   <>
