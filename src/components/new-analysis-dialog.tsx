@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
@@ -27,10 +27,20 @@ import { Alert, AlertDescription } from './ui/alert';
 import { Terminal } from 'lucide-react';
 
 const formSchema = z.object({
-  brandName: z.string().min(1, { message: 'Project name is required.' }),
+  brandName: z.string().min(1, { message: 'Brand name is required.' }),
   description: z.string().min(1, { message: 'Description is required.' }),
   industry: z.string().min(1, { message: 'Industry is required.' }),
+  otherIndustry: z.string().optional(),
+}).refine(data => {
+    if (data.industry === 'Other') {
+        return !!data.otherIndustry && data.otherIndustry.trim().length > 0;
+    }
+    return true;
+}, {
+    message: 'Please specify the industry.',
+    path: ['otherIndustry'],
 });
+
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -53,12 +63,22 @@ export function NewAnalysisDialog({ open, onOpenChange, onSubmit }: NewAnalysisD
       brandName: '',
       description: '',
       industry: '',
+      otherIndustry: '',
     },
+  });
+
+  const selectedIndustry = useWatch({
+    control,
+    name: "industry",
   });
 
   const handleFormSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
-    await onSubmit(values);
+    const submissionValues = {
+        ...values,
+        industry: values.industry === 'Other' ? values.otherIndustry || '' : values.industry,
+    };
+    await onSubmit(submissionValues);
     setIsSubmitting(false);
     reset();
     onOpenChange(false);
@@ -81,12 +101,12 @@ export function NewAnalysisDialog({ open, onOpenChange, onSubmit }: NewAnalysisD
           </DialogHeader>
           <div className="grid gap-4 py-6">
             <div className="space-y-2">
-              <Label htmlFor="brandName">Project Name *</Label>
+              <Label htmlFor="brandName">Brand Name *</Label>
               <Controller
                 name="brandName"
                 control={control}
                 render={({ field }) => (
-                  <Input id="brandName" {...field} placeholder="Enter project name" />
+                  <Input id="brandName" {...field} placeholder="Enter brand name" />
                 )}
               />
               {errors.brandName && (
@@ -136,10 +156,26 @@ export function NewAnalysisDialog({ open, onOpenChange, onSubmit }: NewAnalysisD
                   </Select>
                 )}
               />
-               {errors.industry && (
+               {errors.industry && !errors.otherIndustry && (
                 <p className="text-destructive text-sm">{errors.industry.message}</p>
               )}
             </div>
+            
+            {selectedIndustry === 'Other' && (
+                 <div className="space-y-2">
+                    <Label htmlFor="otherIndustry">Please specify industry *</Label>
+                     <Controller
+                        name="otherIndustry"
+                        control={control}
+                        render={({ field }) => (
+                        <Input id="otherIndustry" {...field} placeholder="Enter your industry" />
+                        )}
+                    />
+                    {errors.otherIndustry && (
+                        <p className="text-destructive text-sm">{errors.otherIndustry.message}</p>
+                    )}
+                 </div>
+            )}
 
             <Alert className="bg-muted/50">
                 <Terminal className="h-4 w-4" />
