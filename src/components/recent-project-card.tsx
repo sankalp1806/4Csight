@@ -8,25 +8,35 @@ import { Calendar, ChevronDown, ChevronUp, Eye, FileText, Tag, Trash2 } from 'lu
 import type { RecentProject } from '@/app/page';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface RecentProjectCardProps {
   project: RecentProject;
-  onReportClick: (project: RecentProject) => void;
   onDeleteClick: (project: RecentProject) => void;
 }
 
-export function RecentProjectCard({ project, onReportClick, onDeleteClick }: RecentProjectCardProps) {
-  const { title, description, industry, date, progress, status } = project;
+export function RecentProjectCard({ project, onDeleteClick }: RecentProjectCardProps) {
+  const router = useRouter();
+  const { id, title, description, industry, date, progress, status, brandName, executiveSummary } = project;
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const viewLink = `/project/${project.id}?${new URLSearchParams({
+  const viewLink = `/project/${id}?${new URLSearchParams({
     title,
-    brandName: project.brandName,
+    brandName,
     description,
     industry,
   }).toString()}`;
 
-  const canExpand = description.length > 100;
+  const reportLink = `/report?${new URLSearchParams({
+    title: title,
+    summary: executiveSummary || ''
+  })}`
+
+  const handleReportClick = () => {
+    router.push(reportLink);
+  };
+  
+  const canExpand = description && description.length > 100;
 
   return (
     <Card>
@@ -34,14 +44,18 @@ export function RecentProjectCard({ project, onReportClick, onDeleteClick }: Rec
         <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
           <div>
             <h3 className="text-base sm:text-lg font-semibold text-foreground">{title}</h3>
-            <p className="text-sm text-muted-foreground mt-1 mb-3">
-              {isExpanded ? description : `${description.substring(0, 100)}${canExpand ? '...' : ''}`}
-            </p>
-            {canExpand && (
-              <Button variant="link" size="sm" onClick={() => setIsExpanded(!isExpanded)} className="p-0 h-auto text-primary">
-                {isExpanded ? 'Show less' : 'Show more'}
-                {isExpanded ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
-              </Button>
+            {description && (
+                <>
+                    <p className="text-sm text-muted-foreground mt-1 mb-3">
+                    {isExpanded ? description : `${description.substring(0, 100)}${canExpand ? '...' : ''}`}
+                    </p>
+                    {canExpand && (
+                    <Button variant="link" size="sm" onClick={() => setIsExpanded(!isExpanded)} className="p-0 h-auto text-primary">
+                        {isExpanded ? 'Show less' : 'Show more'}
+                        {isExpanded ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
+                    </Button>
+                    )}
+                </>
             )}
             <div className="flex items-center text-xs sm:text-sm text-muted-foreground gap-2 mt-3">
               <Tag className="h-4 w-4" />
@@ -78,7 +92,7 @@ export function RecentProjectCard({ project, onReportClick, onDeleteClick }: Rec
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => onReportClick(project)}
+            onClick={handleReportClick}
             disabled={status !== 'completed'}
           >
             <FileText className="mr-1.5 h-4 w-4" /> Report

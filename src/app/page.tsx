@@ -18,7 +18,6 @@ import { NewAnalysisDialog } from "@/components/new-analysis-dialog";
 import { useRouter } from "next/navigation";
 import type { Generate4CsAnalysisInput } from "@/ai/schemas/4cs-analysis-schema";
 import { generate4CsAnalysis } from "@/ai/flows/generate-4cs-analysis";
-import { ReportDialog } from "@/components/report-dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -70,8 +69,6 @@ export default function DashboardPage() {
   const router = useRouter();
   const [recentProjects, setRecentProjects] = useState<RecentProject[]>([]);
   const [isNewAnalysisDialogOpen, setIsNewAnalysisDialogOpen] = useState(false);
-  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<RecentProject | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<RecentProject | null>(null);
   const isInitialLoad = useRef(true);
 
@@ -124,11 +121,6 @@ export default function DashboardPage() {
         p.id === projectId ? { ...p, status: 'in-progress', description: `Failed to analyze: ${p.description}` } : p
       ));
     }
-  };
-  
-  const handleOpenReport = (project: RecentProject) => {
-    setSelectedProject(project);
-    setIsReportDialogOpen(true);
   };
   
   const handleDeleteClick = (project: RecentProject) => {
@@ -198,7 +190,6 @@ export default function DashboardPage() {
                     <RecentProjectCard 
                       key={project.id} 
                       project={project} 
-                      onReportClick={handleOpenReport}
                       onDeleteClick={handleDeleteClick}
                     />
                   ))
@@ -223,11 +214,6 @@ export default function DashboardPage() {
         onOpenChange={setIsNewAnalysisDialogOpen}
         onSubmit={handleNewProject}
       />
-      <ReportDialog
-        open={isReportDialogOpen}
-        onOpenChange={setIsReportDialogOpen}
-        project={selectedProject}
-      />
        <AlertDialog open={!!projectToDelete} onOpenChange={(open) => !open && setProjectToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -246,5 +232,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
