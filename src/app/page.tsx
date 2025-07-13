@@ -17,6 +17,7 @@ import React, { useState } from "react";
 import { NewAnalysisDialog } from "@/components/new-analysis-dialog";
 import { useRouter } from "next/navigation";
 import type { Generate4CsAnalysisInput } from "@/ai/schemas/4cs-analysis-schema";
+import { generate4CsAnalysis } from "@/ai/flows/generate-4cs-analysis";
 
 const analysisTypes = [
   {
@@ -63,27 +64,35 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const handleNewProject = async (values: Generate4CsAnalysisInput) => {
+    const projectId = new Date().toISOString();
     const newProject: RecentProject = {
-      id: new Date().toISOString(),
+      id: projectId,
       title: `${values.brandName} 4Cs Analysis`,
       description: values.description,
       industry: values.industry,
       brandName: values.brandName,
       date: new Date().toLocaleDateString(),
-      progress: 100,
-      status: 'completed',
+      progress: 10,
+      status: 'in-progress',
     };
     setRecentProjects(prev => [newProject, ...prev]);
     setIsDialogOpen(false);
     
-    // Navigate to competitive analysis page with parameters
-    const queryParams = new URLSearchParams({
-      brandName: values.brandName,
-      description: values.description,
-      industry: values.industry,
-    }).toString();
-    
-    router.push(`/competitive-analysis?${queryParams}`);
+    try {
+      // Run analysis in the background
+      await generate4CsAnalysis(values);
+      // Once analysis is complete, update the project status
+      setRecentProjects(prev => prev.map(p => 
+        p.id === projectId ? { ...p, status: 'completed', progress: 100 } : p
+      ));
+    } catch (error) {
+      console.error("Failed to run analysis:", error);
+      // Optionally handle the error, e.g., show a toast notification
+      // and maybe revert the project status
+      setRecentProjects(prev => prev.map(p => 
+        p.id === projectId ? { ...p, status: 'in-progress', description: 'Failed to analyze' } : p
+      ));
+    }
   };
 
   return (
