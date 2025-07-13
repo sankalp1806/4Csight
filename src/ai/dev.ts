@@ -11,3 +11,5 @@ import '@/ai/flows/generate-category-analysis.ts';
 import '@/ai/flows/analyze-competitor.ts';
 import '@/ai/flows/generate-detailed-analysis.ts';
 import '@/ai/flows/generate-swot-analysis.ts';
+import '@/ai/flows/generate-deep-dive-analysis.ts';
+import '@/ai/flows/generate-journey-map.ts';
