@@ -16,3 +16,4 @@ import '@/ai/flows/generate-journey-map.ts';
 import '@/ai/flows/analyze-customer-segment.ts';
 import '@/ai/flows/generate-market-research.ts';
 import '@/ai/flows/generate-personas.ts';
+import '@/ai/flows/generate-demographics.ts';

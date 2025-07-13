@@ -47,6 +47,7 @@ import type { MarketResearch } from '@/ai/schemas/market-research-schema';
 import { generatePersonas } from '@/ai/flows/generate-personas';
 import type { GeneratePersonasOutput, Persona } from '@/ai/schemas/persona-generation-schema';
 import Image from 'next/image';
+import { DemographicsDialog } from '@/components/demographics-dialog';
 
 type AnalysisType = 'deep-dive' | 'journey-map' | 'market-research' | 'persona-generator' | null;
 
@@ -58,6 +59,7 @@ function ConsumerAnalysisContent() {
   );
   const [loading, setLoading] = useState(true);
   const [isAddSegmentDialogOpen, setIsAddSegmentDialogOpen] = useState(false);
+  const [isDemographicsDialogOpen, setIsDemographicsDialogOpen] = useState(false);
 
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<CustomerSegment | null>(null);
@@ -168,7 +170,8 @@ function ConsumerAnalysisContent() {
       progress: analysis.topLevelMetrics.demographics,
       icon: <Users className="h-6 w-6" />,
       color: 'text-blue-500',
-      gradient: 'from-blue-50 to-blue-100/10'
+      gradient: 'from-blue-50 to-blue-100/10',
+      onClick: () => setIsDemographicsDialogOpen(true),
     },
     {
       title: 'Psychographics',
@@ -321,6 +324,12 @@ function ConsumerAnalysisContent() {
         brandName={brandName}
         industry={industry}
       />
+       <DemographicsDialog
+        open={isDemographicsDialogOpen}
+        onOpenChange={setIsDemographicsDialogOpen}
+        brandName={brandName}
+        industry={industry}
+      />
     </>
   );
 }
@@ -332,6 +341,7 @@ const MetricCard = ({
   icon,
   color,
   gradient,
+  onClick,
 }: {
   title: string;
   description: string;
@@ -339,8 +349,12 @@ const MetricCard = ({
   icon: React.ReactNode;
   color: string;
   gradient: string;
+  onClick?: () => void;
 }) => (
-  <Card className={`border-none bg-gradient-to-br ${gradient} p-4 sm:p-6 flex flex-col justify-between`}>
+  <Card 
+    className={`border-none bg-gradient-to-br ${gradient} p-4 sm:p-6 flex flex-col justify-between ${onClick ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`}
+    onClick={onClick}
+  >
     <div>
       <div className={`p-2 inline-block rounded-lg bg-white/50 ${color}`}>{icon}</div>
       <h3 className="text-md sm:text-lg font-semibold mt-4">{title}</h3>
