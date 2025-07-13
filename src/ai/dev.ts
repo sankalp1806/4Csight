@@ -19,3 +19,5 @@ import '@/ai/flows/generate-personas.ts';
 import '@/ai/flows/generate-demographics.ts';
 import '@/ai/flows/generate-psychographics.ts';
 import '@/ai/flows/generate-behavioral-patterns.ts';
+import '@/ai/flows/generate-global-trends.ts';
+import '@/ai/flows/generate-cultural-insights.ts';

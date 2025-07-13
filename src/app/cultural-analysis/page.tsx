@@ -29,6 +29,10 @@ import type {
   CoreValue,
   CulturalOpportunity,
 } from '@/ai/schemas/cultural-analysis-schema';
+import { GlobalTrendsDialog } from '@/components/global-trends-dialog';
+import { AiInsightsDialog } from '@/components/ai-insights-dialog';
+import { CulturalMonitoringDialog } from '@/components/cultural-monitoring-dialog';
+
 
 function CulturalAnalysisContent() {
   const searchParams = useSearchParams();
@@ -37,12 +41,17 @@ function CulturalAnalysisContent() {
     null
   );
   const [loading, setLoading] = useState(true);
+  const [isGlobalTrendsOpen, setIsGlobalTrendsOpen] = useState(false);
+  const [isAiInsightsOpen, setIsAiInsightsOpen] = useState(false);
+  const [isMonitoringOpen, setIsMonitoringOpen] = useState(false);
+
+
+  const brandName = searchParams.get('brandName') || '';
+  const industry = searchParams.get('industry') || '';
 
   useEffect(() => {
-    const brandName = searchParams.get('brandName');
     const description = searchParams.get('description');
-    const industry = searchParams.get('industry');
-
+    
     if (brandName && description && industry) {
       const fetchAnalysis = async () => {
         setLoading(true);
@@ -68,7 +77,7 @@ function CulturalAnalysisContent() {
     } else {
       setLoading(false);
     }
-  }, [searchParams, toast]);
+  }, [searchParams, toast, brandName, industry]);
 
   if (loading) {
     return <AnalysisSkeleton />;
@@ -113,10 +122,10 @@ function CulturalAnalysisContent() {
           </p>
         </div>
         <div className="flex gap-2 shrink-0 w-full sm:w-auto">
-          <Button variant="outline" className="w-full sm:w-auto">
+          <Button variant="outline" className="w-full sm:w-auto" onClick={() => setIsGlobalTrendsOpen(true)}>
             <Globe className="mr-2 h-4 w-4" /> Global Trends
           </Button>
-          <Button className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto" onClick={() => setIsAiInsightsOpen(true)}>
             <Zap className="mr-2 h-4 w-4" /> AI Insights
           </Button>
         </div>
@@ -191,10 +200,27 @@ function CulturalAnalysisContent() {
             score={analysis.culturalFitScore}
             getBadgeClass={getBadgeClass}
           />
-          <CulturalMonitoringCard />
+          <CulturalMonitoringCard onSetupClick={() => setIsMonitoringOpen(true)} />
           <RegionalInsightsCard insights={analysis.regionalInsights} />
         </aside>
       </div>
+
+      <GlobalTrendsDialog 
+        open={isGlobalTrendsOpen}
+        onOpenChange={setIsGlobalTrendsOpen}
+        brandName={brandName}
+        industry={industry}
+      />
+      <AiInsightsDialog
+        open={isAiInsightsOpen}
+        onOpenChange={setIsAiInsightsOpen}
+        analysis={analysis}
+      />
+       <CulturalMonitoringDialog
+        open={isMonitoringOpen}
+        onOpenChange={setIsMonitoringOpen}
+        trends={analysis.prevailingTrends}
+      />
     </>
   );
 }
@@ -298,7 +324,7 @@ const CulturalFitScoreCard = ({ score, getBadgeClass }: { score: GenerateCultura
   </Card>
 );
 
-const CulturalMonitoringCard = () => (
+const CulturalMonitoringCard = ({ onSetupClick }: { onSetupClick: () => void }) => (
   <div className="p-6 rounded-lg text-center bg-gradient-to-br from-primary to-purple-600 text-primary-foreground">
     <h3 className="text-lg sm:text-xl font-bold">Cultural Monitoring</h3>
     <p className="mt-2 text-xs sm:text-sm opacity-90">
@@ -307,6 +333,7 @@ const CulturalMonitoringCard = () => (
     <Button
       variant="secondary"
       className="mt-4 bg-white/90 hover:bg-white text-primary font-semibold text-sm"
+      onClick={onSetupClick}
     >
       Setup Alerts
     </Button>
