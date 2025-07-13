@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Generates a comprehensive 4Cs analysis (Competition, Culture, Consumer, Category) for a given brand or business using an LLM.
