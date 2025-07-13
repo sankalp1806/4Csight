@@ -1,78 +1,105 @@
 'use client';
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { AnalysisCard } from "@/components/analysis-card";
+import { RecentProjectCard } from "@/components/recent-project-card";
+import { QuickStats } from "@/components/quick-stats";
+import { AIPoweredInsights } from "@/components/ai-powered-insights";
 
-import { useState, useTransition } from 'react';
-import { PageHeader } from '@/components/page-header';
-import { AnalysisForm } from '@/components/analysis-form';
-import { AnalysisReport } from '@/components/analysis-report';
-import { getAnalysis, type AnalysisResult } from '@/app/actions';
-import type { AnalysisFormValues } from '@/lib/schema';
-import { useToast } from '@/hooks/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent } from '@/components/ui/card';
+const analysisTypes = [
+  {
+    title: 'Competitive Analysis',
+    description: 'Analyze your competition landscape',
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M3 3v18h18"/><path d="M7 16V7h4v9"/><path d="M12 16v-4h4v4"/><path d="M17 16v-2h4v2"/></svg>,
+    color: 'bg-blue-500',
+  },
+  {
+    title: 'Consumer Analysis',
+    description: 'Understand your target audience',
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+    color: 'bg-green-500',
+  },
+  {
+    title: 'Cultural Analysis',
+    description: 'Examine cultural trends and alignment',
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>,
+    color: 'bg-purple-500',
+  },
+  {
+    title: 'Category Analysis',
+    description: 'Define and analyze your category',
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M21 10h-2.5a2 2 0 0 0-2 2v2.5a2 2 0 0 0 2 2H21"/><path d="M4 12V8a2 2 0 0 1 2-2h2.5a2 2 0 0 1 2 2v2.5a2 2 0 0 1-2 2H4z"/><path d="M12 21v-4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v4"/><path d="M12 4V2.5a2 2 0 0 1 2-2h2.5a2 2 0 0 1 2 2V4"/></svg>,
+    color: 'bg-orange-500',
+  }
+];
 
-function LoadingSkeleton() {
+const recentProjects = [
+  {
+    title: 'Tech Startup Analysis',
+    description: 'Comprehensive 4Cs analysis for a SaaS startup',
+    tag: 'Technology',
+    date: '2024-01-15',
+    progress: 100,
+    status: 'completed',
+  },
+  {
+    title: 'Restaurant Chain Expansion',
+    description: 'Market analysis for restaurant expansion',
+    tag: 'Food & Beverage',
+    date: '2024-01-10',
+    progress: 75,
+    status: 'in-progress',
+  },
+];
+
+export default function DashboardPage() {
   return (
-    <div className="space-y-8">
-      <Card>
-        <CardContent className="p-6 space-y-4">
-          <Skeleton className="h-8 w-1/3" />
-          <Skeleton className="h-5 w-full" />
-          <Skeleton className="h-5 w-full" />
-          <Skeleton className="h-5 w-4/5" />
-        </CardContent>
-      </Card>
-      
-      <div className="space-y-2">
-        <Skeleton className="h-10 w-full" />
-        <Card>
-          <CardContent className="p-6 space-y-4">
-             <Skeleton className="h-6 w-1/4" />
-             <Skeleton className="h-4 w-full" />
-             <Skeleton className="h-4 w-full" />
-          </CardContent>
-        </Card>
-      </div>
+    <div className="flex flex-col min-h-screen bg-background">
+      <main className="flex-grow container mx-auto py-8 px-4 md:px-6 space-y-10">
+        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              4Cs Analysis Dashboard
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Comprehensive strategic analysis tool for your business
+            </p>
+          </div>
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+            <Plus className="mr-2 h-4 w-4" />
+            New Analysis Project
+          </Button>
+        </header>
 
-      <div className="space-y-4">
-        <Skeleton className="h-9 w-1/3" />
-        <Skeleton className="h-16 w-full" />
-        <Skeleton className="h-16 w-full" />
-        <Skeleton className="h-16 w-full" />
-      </div>
-    </div>
-  );
-}
-
-export default function Home() {
-  const [isPending, startTransition] = useTransition();
-  const { toast } = useToast();
-  const [result, setResult] = useState<AnalysisResult | null>(null);
-
-  const handleFormSubmit = (values: AnalysisFormValues) => {
-    setResult(null);
-    startTransition(async () => {
-      const { data, error } = await getAnalysis(values);
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "An error occurred",
-          description: error,
-        });
-        return;
-      }
-      setResult(data || null);
-    });
-  };
-
-  return (
-    <div className="flex flex-col min-h-screen">
-      <PageHeader />
-      <main className="flex-grow container mx-auto py-8 px-4 md:px-6 space-y-12">
-        <div className="print-hidden">
-          <AnalysisForm onSubmit={handleFormSubmit} isPending={isPending} />
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {analysisTypes.map((item, index) => (
+            <AnalysisCard key={index} {...item} />
+          ))}
         </div>
-        {isPending && <LoadingSkeleton />}
-        {result && <AnalysisReport data={result} />}
+
+        <div className="grid gap-12 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-8">
+            <section>
+              <div className="flex items-center gap-3 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-foreground"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                <div>
+                  <h2 className="text-2xl font-semibold text-foreground">Recent Projects</h2>
+                  <p className="text-muted-foreground">Your latest 4Cs analysis projects</p>
+                </div>
+              </div>
+              <div className="space-y-6">
+                {recentProjects.map((project, index) => (
+                  <RecentProjectCard key={index} {...project} />
+                ))}
+              </div>
+            </section>
+          </div>
+          
+          <aside className="space-y-8">
+             <QuickStats />
+             <AIPoweredInsights />
+          </aside>
+        </div>
       </main>
     </div>
   );
