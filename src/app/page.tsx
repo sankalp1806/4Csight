@@ -13,12 +13,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu } from 'lucide-react';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NewAnalysisDialog } from "@/components/new-analysis-dialog";
 import { useRouter } from "next/navigation";
 import type { Generate4CsAnalysisInput } from "@/ai/schemas/4cs-analysis-schema";
 import { generate4CsAnalysis } from "@/ai/flows/generate-4cs-analysis";
 import { ReportDialog } from "@/components/report-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const analysisTypes = [
   {
@@ -65,6 +75,26 @@ export default function DashboardPage() {
   const [isNewAnalysisDialogOpen, setIsNewAnalysisDialogOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<RecentProject | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<RecentProject | null>(null);
+
+  useEffect(() => {
+    try {
+      const savedProjects = localStorage.getItem('recentProjects');
+      if (savedProjects) {
+        setRecentProjects(JSON.parse(savedProjects));
+      }
+    } catch (error) {
+      console.error("Failed to load projects from localStorage", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('recentProjects', JSON.stringify(recentProjects));
+    } catch (error) {
+      console.error("Failed to save projects to localStorage", error);
+    }
+  }, [recentProjects]);
 
   const handleNewProject = async (values: Generate4CsAnalysisInput) => {
     const projectId = new Date().toISOString();
@@ -89,7 +119,7 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Failed to run analysis:", error);
       setRecentProjects(prev => prev.map(p => 
-        p.id === projectId ? { ...p, status: 'in-progress', description: 'Failed to analyze' } : p
+        p.id === projectId ? { ...p, status: 'in-progress', description: `Failed to analyze: ${p.description}` } : p
       ));
     }
   };
@@ -97,6 +127,17 @@ export default function DashboardPage() {
   const handleOpenReport = (project: RecentProject) => {
     setSelectedProject(project);
     setIsReportDialogOpen(true);
+  };
+  
+  const handleDeleteClick = (project: RecentProject) => {
+    setProjectToDelete(project);
+  };
+
+  const confirmDelete = () => {
+    if (projectToDelete) {
+      setRecentProjects(prev => prev.filter(p => p.id !== projectToDelete.id));
+      setProjectToDelete(null);
+    }
   };
 
   return (
@@ -156,6 +197,7 @@ export default function DashboardPage() {
                       key={project.id} 
                       project={project} 
                       onReportClick={handleOpenReport}
+                      onDeleteClick={handleDeleteClick}
                     />
                   ))
                 ) : (
@@ -184,6 +226,21 @@ export default function DashboardPage() {
         onOpenChange={setIsReportDialogOpen}
         project={selectedProject}
       />
+       <AlertDialog open={!!projectToDelete} onOpenChange={(open) => !open && setProjectToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              project "{projectToDelete?.title}".
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setProjectToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
