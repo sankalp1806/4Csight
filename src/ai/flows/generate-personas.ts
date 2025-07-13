@@ -10,7 +10,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { GeneratePersonasInputSchema, GeneratePersonasOutputSchema, PersonaSchema } from '@/ai/schemas/persona-generation-schema';
-import { CustomerSegment } from '../schemas/consumer-analysis-schema';
+import { CustomerSegmentSchema, type CustomerSegment } from '@/ai/schemas/consumer-analysis-schema';
 
 export type GeneratePersonasInput = z.infer<typeof GeneratePersonasInputSchema>;
 export type GeneratePersonasOutput = z.infer<typeof GeneratePersonasOutputSchema>;
