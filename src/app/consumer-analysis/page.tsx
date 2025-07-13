@@ -48,6 +48,7 @@ import { generatePersonas } from '@/ai/flows/generate-personas';
 import type { GeneratePersonasOutput, Persona } from '@/ai/schemas/persona-generation-schema';
 import Image from 'next/image';
 import { DemographicsDialog } from '@/components/demographics-dialog';
+import { PsychographicsDialog } from '@/components/psychographics-dialog';
 
 type AnalysisType = 'deep-dive' | 'journey-map' | 'market-research' | 'persona-generator' | null;
 
@@ -60,6 +61,7 @@ function ConsumerAnalysisContent() {
   const [loading, setLoading] = useState(true);
   const [isAddSegmentDialogOpen, setIsAddSegmentDialogOpen] = useState(false);
   const [isDemographicsDialogOpen, setIsDemographicsDialogOpen] = useState(false);
+  const [isPsychographicsDialogOpen, setIsPsychographicsDialogOpen] = useState(false);
 
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<CustomerSegment | null>(null);
@@ -179,7 +181,8 @@ function ConsumerAnalysisContent() {
       progress: analysis.topLevelMetrics.psychographics,
       icon: <Puzzle className="h-6 w-6" />,
       color: 'text-purple-500',
-      gradient: 'from-purple-50 to-purple-100/10'
+      gradient: 'from-purple-50 to-purple-100/10',
+      onClick: () => setIsPsychographicsDialogOpen(true),
     },
     {
       title: 'Behavioral Patterns',
@@ -327,6 +330,12 @@ function ConsumerAnalysisContent() {
        <DemographicsDialog
         open={isDemographicsDialogOpen}
         onOpenChange={setIsDemographicsDialogOpen}
+        brandName={brandName}
+        industry={industry}
+      />
+      <PsychographicsDialog
+        open={isPsychographicsDialogOpen}
+        onOpenChange={setIsPsychographicsDialogOpen}
         brandName={brandName}
         industry={industry}
       />
