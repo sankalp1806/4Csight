@@ -36,20 +36,23 @@ const prompt = ai.definePrompt({
   output: {schema: Generate4CsAnalysisOutputSchema},
   prompt: `You are a strategic marketing expert specializing in 4Cs analysis (Competition, Culture, Consumer, Category).
 
-  Analyze the brand or business: {{{brandName}}}.
+  Your task is to analyze the brand or business based on the provided information and supplement it with real-time web search to gather the most current and relevant data.
+
+  Brand to Analyze: {{{brandName}}}
   Business Description: {{{description}}}
   Industry: {{{industry}}}
 
-  Provide a comprehensive 4Cs analysis, including actionable insights and a deep understanding of the brand's current market position and potential opportunities. The analysis should include:
+  Instructions:
+  1.  **Perform Web Searches:** Use your search capabilities to find up-to-date information about the brand, its competitors, the specified industry, cultural trends, and consumer behavior.
+  2.  **Synthesize Information:** Combine the information from your web searches with the user-provided description and industry.
+  3.  **Generate 4Cs Analysis:** Provide a comprehensive analysis covering the following four areas:
+      -   **Competition:** Analyze the competitive landscape, including direct and indirect competitors, their strategies, market share, strengths, and weaknesses. Use web search to identify key competitors if not provided.
+      -   **Culture:** Examine prevailing cultural trends, societal values, and lifestyle shifts that could impact the brand. Use web search to identify recent and relevant cultural movements.
+      -   **Consumer:** Understand the target audience segments, their needs, motivations, online behavior, and perceptions. Use web search to find recent consumer studies or articles.
+      -   **Category:** Define and analyze the product or service category, including market size, growth trends, and key drivers of demand. Use web search for the latest market data and reports.
+  4.  **Create Executive Summary:** After the analysis, create a concise **Executive Summary** with prioritized action items (High, Medium, and Low priority). These actions should be strategic recommendations derived directly from the 4Cs analysis.
 
-  - **Competition:** Analyzing the competitive landscape, including direct and indirect competitors, their strategies, strengths, and weaknesses.
-  - **Culture:** Examining prevailing cultural trends, values, and how the brand aligns with or diverges from these cultural elements.
-  - **Consumer:** Understanding the target audience segments, their needs, motivations, behaviors, and perceptions.
-  - **Category:** Defining and analyzing the product or service category, including market size, growth trends, and key drivers of demand.
-
-  Finally, create an **Executive Summary** with prioritized action items (High, Medium, and Low priority) based on the 4Cs analysis.
-
-  Return the result in JSON format.
+  Return the result in the required JSON format.
   `,
 });
 
