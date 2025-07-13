@@ -32,27 +32,23 @@ const prompt = ai.definePrompt({
   Industry: {{{industry}}}
 
   Instructions:
-  1.  **Perform Real-Time Web Searches:** Use your search capabilities to find the most current and accurate data for all requested metrics.
+  1.  **Perform Real-Time Web Searches:** Use your search capabilities to find the most current and accurate data for all requested metrics. Prioritize official reports, financial statements, and reputable market analysis sources.
   2.  **Generate Top-Level Metrics:** Provide key metrics for the category, including:
-      - Market Size (e.g., "$12.5B") and its recent percentage change (e.g., "+15%"). This must be based on the latest reports.
-      - Overall Growth Rate (e.g., "8.5%") and its recent percentage change (e.g., "+2.1%"). This must be based on the latest reports.
-      - Estimated Number of Active Players and its recent change (e.g., "+12").
-      - Market Concentration level (e.g., "Moderate").
-      - Market Concentration Description: Provide a one-sentence summary explaining the concentration (e.g., "The market is dominated by a few major players...").
+      -   **marketSize:** A precise, current market size value (e.g., "$12.5B"). If a real-time figure is unavailable, use the most recent available data and set 'isMarketSizeEstimated' to true.
+      -   **isMarketSizeEstimated:** A boolean set to true if the market size is an estimate or not from the current year, otherwise false.
+      -   **growthRate:** A precise, current growth rate (e.g., "8.5%"). If a real-time figure is unavailable, use the most recent data and set 'isGrowthRateEstimated' to true.
+      -   **isGrowthRateEstimated:** A boolean set to true if the growth rate is an estimate or not from the current year, otherwise false.
+      -   **activePlayers:** The number of active players. If the exact number isn't available, provide a well-reasoned estimate and set 'isActivePlayersEstimated' to true.
+      -   **isActivePlayersEstimated:** A boolean set to true if the number of active players is an estimate, otherwise false.
+      -   **marketConcentration:** The level of market concentration (e.g., "Moderate").
+      -   **marketConcentrationDescription:** A one-sentence summary explaining the concentration.
   3.  **Identify and Detail Market Segments:**
-      - Identify 4-5 key market segments within the category.
-      - For each segment, provide:
-          - A descriptive name.
-          - The estimated revenue in billions (e.g., "$5.6B").
-          - The segment's growth rate as a percentage.
-          - The segment's market share as a percentage.
-          - The recent trend ('up', 'down', or 'stable').
+      - Identify 4-5 key market segments.
+      - For each, provide a name, revenue, growth rate, market share, and trend.
   4.  **Assess Category Health:**
-      - Provide an overall assessment (e.g., "Healthy", "Stagnant", "Declining").
-      - Rate the 'Growth Potential', 'Competition Level', and 'Barriers to Entry' as 'High', 'Moderate', or 'Low'.
+      - Provide an overall assessment and rate potential, competition, and barriers to entry.
   5.  **Identify Demand Drivers:**
-      - List 3-4 key factors influencing demand in this category.
-      - For each driver, provide a name, a short description, its impact level ('High Impact', 'Medium Impact', 'Low Impact'), and its trend ('up' or 'down').
+      - List 3-4 key demand drivers with descriptions, impact, and trends.
 
   Return the result in the required JSON format.
   `,

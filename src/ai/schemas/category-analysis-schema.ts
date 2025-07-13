@@ -13,11 +13,14 @@ export type GenerateCategoryAnalysisInput = z.infer<typeof GenerateCategoryAnaly
 
 export const TopLevelMetricSchema = z.object({
     marketSize: z.string().describe('The total market size, e.g., "$12.5B".'),
-    marketSizeChange: z.string().describe('The recent percentage change in market size, e.g., "+15%".'),
+    marketSizeChange: z.string().optional().describe('The recent percentage change in market size, e.g., "+15%".'),
+    isMarketSizeEstimated: z.boolean().optional().describe('True if the market size is an estimate or not from the current year.'),
     growthRate: z.string().describe('The overall market growth rate, e.g., "8.5%".'),
-    growthRateChange: z.string().describe('The recent change in growth rate, e.g., "+2.1%".'),
+    growthRateChange: z.string().optional().describe('The recent change in growth rate, e.g., "+2.1%".'),
+    isGrowthRateEstimated: z.boolean().optional().describe('True if the growth rate is an estimate or not from the current year.'),
     activePlayers: z.number().describe('The number of active players in the market.'),
-    activePlayersChange: z.string().describe('The recent change in the number of active players, e.g., "+12".'),
+    activePlayersChange: z.string().optional().describe('The recent change in the number of active players, e.g., "+12".'),
+    isActivePlayersEstimated: z.boolean().optional().describe('True if the number of active players is an estimate.'),
     marketConcentration: z.string().describe('The level of market concentration, e.g., "Moderate".'),
     marketConcentrationDescription: z.string().describe('A brief description of the market concentration, e.g., "The market is dominated by a few major players...".'),
 });

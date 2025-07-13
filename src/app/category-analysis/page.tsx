@@ -101,28 +101,31 @@ function CategoryAnalysisContent() {
       value: topLevelMetrics.marketSize,
       change: topLevelMetrics.marketSizeChange,
       icon: <DollarSign className="w-6 h-6 text-blue-500" />,
-      gradient: 'from-blue-50 to-blue-100/10'
+      gradient: 'from-blue-50 to-blue-100/10',
+      isEstimated: topLevelMetrics.isMarketSizeEstimated,
     },
     {
       title: 'Growth Rate',
       value: topLevelMetrics.growthRate,
       change: topLevelMetrics.growthRateChange,
       icon: <TrendingUp className="w-6 h-6 text-green-500" />,
-      gradient: 'from-green-50 to-green-100/10'
+      gradient: 'from-green-50 to-green-100/10',
+      isEstimated: topLevelMetrics.isGrowthRateEstimated,
     },
     {
       title: 'Active Players',
       value: topLevelMetrics.activePlayers,
       change: topLevelMetrics.activePlayersChange,
       icon: <Users className="w-6 h-6 text-purple-500" />,
-      gradient: 'from-purple-50 to-purple-100/10'
+      gradient: 'from-purple-50 to-purple-100/10',
+      isEstimated: topLevelMetrics.isActivePlayersEstimated,
     },
     {
       title: 'Market Concentration',
       value: topLevelMetrics.marketConcentration,
       description: topLevelMetrics.marketConcentrationDescription,
       icon: <Target className="w-6 h-6 text-orange-500" />,
-      gradient: 'from-orange-50 to-orange-100/10'
+      gradient: 'from-orange-50 to-orange-100/10',
     },
   ];
 
@@ -215,14 +218,15 @@ function CategoryAnalysisContent() {
   );
 }
 
-const MetricCard = ({ title, value, change, icon, gradient, description }: { title: string, value: string | number, change?: string, icon: React.ReactNode, gradient: string, description?: string }) => (
+const MetricCard = ({ title, value, change, icon, gradient, description, isEstimated }: { title: string, value: string | number, change?: string, icon: React.ReactNode, gradient: string, description?: string, isEstimated?: boolean }) => (
     <Card className={`border-none bg-gradient-to-br ${gradient}`}>
       <CardContent className="p-6">
         <div className="p-2 inline-block rounded-lg bg-white/50">{icon}</div>
         <p className="text-3xl font-bold mt-2">{value}</p>
         <p className="text-muted-foreground text-sm">{title}</p>
         {change && <p className={`text-sm font-medium mt-1 ${change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>{change}</p>}
-        {description && <p className="text-sm text-destructive mt-1">{description}</p>}
+        {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
+        {isEstimated && <p className="text-xs text-muted-foreground mt-1">Estimated</p>}
       </CardContent>
     </Card>
   );
