@@ -17,7 +17,6 @@ import { useToast } from '@/hooks/use-toast';
 import {
   ArrowLeft,
   Briefcase,
-  CheckCircle,
   Plus,
   Search,
   Users,
@@ -28,27 +27,36 @@ import {
   Star,
   TrendingUp,
   TrendingDown,
-  PieChart,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense, useEffect, useState } from 'react';
-import {
-  generate4CsAnalysis
-} from '@/ai/flows/generate-4cs-analysis';
-import type { Competitor, Generate4CsAnalysisOutput } from '@/ai/schemas/4cs-analysis-schema';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { generate4CsAnalysis } from '@/ai/flows/generate-4cs-analysis';
+import { analyzeCompetitor } from '@/ai/flows/analyze-competitor';
+import type { Competitor } from '@/ai/schemas/4cs-analysis-schema';
 import { Skeleton } from '@/components/ui/skeleton';
+
+const competitorFormSchema = z.object({
+  name: z.string().min(1, 'Competitor name is required.'),
+  type: z.enum(['Direct', 'Indirect', 'Substitute'], {
+    required_error: 'Competitor type is required.',
+  }),
+  description: z.string().optional(),
+});
+type CompetitorFormValues = z.infer<typeof competitorFormSchema>;
 
 function CompetitiveAnalysisContent() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [analysis, setAnalysis] = useState<Generate4CsAnalysisOutput | null>(
-    null
-  );
+  const [competitors, setCompetitors] = useState<Competitor[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const brandName = searchParams.get('brandName') || '';
+
   useEffect(() => {
-    const brandName = searchParams.get('brandName');
     const description = searchParams.get('description');
     const industry = searchParams.get('industry');
 
@@ -61,7 +69,7 @@ function CompetitiveAnalysisContent() {
             description,
             industry,
           });
-          setAnalysis(result);
+          setCompetitors(result.competition);
         } catch (error) {
           console.error('Failed to fetch analysis:', error);
           toast({
@@ -77,28 +85,28 @@ function CompetitiveAnalysisContent() {
     } else {
       setLoading(false);
     }
-  }, [searchParams, toast]);
+  }, [searchParams, toast, brandName]);
+
+  const handleNewCompetitor = (newCompetitor: Competitor) => {
+    setCompetitors((prev) => [newCompetitor, ...prev]);
+  };
 
   const counts = React.useMemo(() => {
-    const direct =
-      analysis?.competition.filter((c) => c.type === 'Direct').length || 0;
-    const indirect =
-      analysis?.competition.filter((c) => c.type === 'Indirect').length || 0;
+    const direct = competitors.filter((c) => c.type === 'Direct').length;
+    const indirect = competitors.filter((c) => c.type === 'Indirect').length;
     const substitute =
-      analysis?.competition.filter((c) => c.type === 'Substitute').length || 0;
+      competitors.filter((c) => c.type === 'Substitute').length;
     return { direct, indirect, substitute };
-  }, [analysis]);
+  }, [competitors]);
 
   if (loading) {
     return <AnalysisSkeleton />;
   }
 
-  if (!analysis) {
+  if (competitors.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-muted-foreground">
-          No analysis data available.
-        </p>
+        <p className="text-muted-foreground">No analysis data available.</p>
         <p className="text-sm text-muted-foreground mt-2">
           Go back to the dashboard to start a new analysis.
         </p>
@@ -126,9 +134,6 @@ function CompetitiveAnalysisContent() {
         <div className="flex gap-2 shrink-0 w-full sm:w-auto">
           <Button variant="outline" className="w-full sm:w-auto">
             <Search className="mr-2 h-4 w-4" /> AI Search
-          </Button>
-          <Button className="w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" /> Add Competitor
           </Button>
         </div>
       </div>
@@ -175,14 +180,17 @@ function CompetitiveAnalysisContent() {
               </div>
             </div>
             <div className="space-y-6">
-              {analysis.competition.map((competitor, index) => (
+              {competitors.map((competitor, index) => (
                 <IdentifiedCompetitorCard key={index} {...competitor} />
               ))}
             </div>
           </section>
         </div>
         <aside className="space-y-8 sticky top-8">
-          <AddNewCompetitorCard />
+          <AddNewCompetitorCard
+            brandNameToAnalyze={brandName}
+            onCompetitorAdded={handleNewCompetitor}
+          />
           <AIPoweredResearchCard />
         </aside>
       </div>
@@ -205,7 +213,9 @@ const CompetitorTypeCard = ({
   color: string;
   gradient: string;
 }) => (
-  <Card className={`text-center p-6 flex flex-col items-center justify-center border-none bg-gradient-to-br ${gradient}`}>
+  <Card
+    className={`text-center p-6 flex flex-col items-center justify-center border-none bg-gradient-to-br ${gradient}`}
+  >
     <div className={`p-3 rounded-full bg-white/50 ${color}`}>{icon}</div>
     <h3 className={`text-lg font-semibold mt-4 ${color}`}>{title}</h3>
     <p className="text-muted-foreground text-sm mt-1">{description}</p>
@@ -288,48 +298,136 @@ const IdentifiedCompetitorCard = (competitor: Competitor) => {
   );
 };
 
-const AddNewCompetitorCard = () => (
-  <Card className="border-none bg-gradient-to-br from-card to-muted/20">
-    <CardHeader>
-      <CardTitle className="flex items-center gap-2">
-        <Plus className="w-5 h-5" />
-        Add New Competitor
-      </CardTitle>
-      <p className="text-sm text-muted-foreground">
-        Manually add or search for competitors
-      </p>
-    </CardHeader>
-    <CardContent className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="competitor-name">Competitor Name</Label>
-        <Input id="competitor-name" placeholder="Enter competitor name" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="competitor-type">Competitor Type</Label>
-        <Select>
-          <SelectTrigger id="competitor-type">
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Direct">Direct</SelectItem>
-            <SelectItem value="Indirect">Indirect</SelectItem>
-            <SelectItem value="Substitute">Substitute</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="competitor-description">Description</Label>
-        <Textarea
-          id="competitor-description"
-          placeholder="Brief description of competitor..."
-        />
-      </div>
-      <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-        <Search className="mr-2 h-4 w-4" /> Research with AI
-      </Button>
-    </CardContent>
-  </Card>
-);
+interface AddNewCompetitorCardProps {
+  brandNameToAnalyze: string;
+  onCompetitorAdded: (competitor: Competitor) => void;
+}
+
+function AddNewCompetitorCard({
+  brandNameToAnalyze,
+  onCompetitorAdded,
+}: AddNewCompetitorCardProps) {
+  const { toast } = useToast();
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<CompetitorFormValues>({
+    resolver: zodResolver(competitorFormSchema),
+  });
+
+  const onSubmit = async (data: CompetitorFormValues) => {
+    try {
+      const result = await analyzeCompetitor({
+        brandNameToAnalyze: brandNameToAnalyze,
+        competitorName: data.name,
+        competitorType: data.type,
+        competitorDescription: data.description || '',
+      });
+      onCompetitorAdded(result);
+      reset();
+      toast({
+        title: 'Success',
+        description: `${data.name} has been analyzed and added to the list.`,
+      });
+    } catch (error) {
+      console.error('Failed to analyze competitor:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to analyze the new competitor.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  return (
+    <Card className="border-none bg-gradient-to-br from-card to-muted/20">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Plus className="w-5 h-5" />
+          Add New Competitor
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Manually add or search for competitors
+        </p>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="competitor-name">Competitor Name *</Label>
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  id="competitor-name"
+                  placeholder="Enter competitor name"
+                  {...field}
+                />
+              )}
+            />
+            {errors.name && (
+              <p className="text-sm text-destructive">{errors.name.message}</p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="competitor-type">Competitor Type *</Label>
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <SelectTrigger id="competitor-type">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Direct">Direct</SelectItem>
+                    <SelectItem value="Indirect">Indirect</SelectItem>
+                    <SelectItem value="Substitute">Substitute</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.type && (
+              <p className="text-sm text-destructive">{errors.type.message}</p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="competitor-description">Description</Label>
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  id="competitor-description"
+                  placeholder="Brief description of competitor..."
+                  {...field}
+                />
+              )}
+            />
+          </div>
+          <Button
+            type="submit"
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              'Researching...'
+            ) : (
+              <>
+                <Search className="mr-2 h-4 w-4" /> Research with AI
+              </>
+            )}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
 
 const AIPoweredResearchCard = () => (
   <div className="p-6 rounded-lg text-center bg-gradient-to-br from-primary via-purple-600 to-indigo-600 text-primary-foreground">
@@ -355,13 +453,18 @@ const AnalysisSkeleton = () => (
       </div>
       <div className="flex gap-2 shrink-0 w-full sm:w-auto">
         <Skeleton className="h-10 w-full sm:w-32" />
-        <Skeleton className="h-10 w-full sm:w-36" />
       </div>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
-      <Card className="p-6"><Skeleton className="h-40 w-full" /></Card>
-      <Card className="p-6"><Skeleton className="h-40 w-full" /></Card>
-      <Card className="p-6"><Skeleton className="h-40 w-full" /></Card>
+      <Card className="p-6">
+        <Skeleton className="h-40 w-full" />
+      </Card>
+      <Card className="p-6">
+        <Skeleton className="h-40 w-full" />
+      </Card>
+      <Card className="p-6">
+        <Skeleton className="h-40 w-full" />
+      </Card>
     </div>
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2 space-y-8">
@@ -373,12 +476,24 @@ const AnalysisSkeleton = () => (
           </div>
         </div>
         <div className="space-y-6">
-          <Card><CardContent className="p-6"><Skeleton className="h-48 w-full" /></CardContent></Card>
-          <Card><CardContent className="p-6"><Skeleton className="h-48 w-full" /></CardContent></Card>
+          <Card>
+            <CardContent className="p-6">
+              <Skeleton className="h-48 w-full" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <Skeleton className="h-48 w-full" />
+            </CardContent>
+          </Card>
         </div>
       </div>
       <aside className="space-y-8">
-        <Card><CardContent className="p-6"><Skeleton className="h-80 w-full" /></CardContent></Card>
+        <Card>
+          <CardContent className="p-6">
+            <Skeleton className="h-80 w-full" />
+          </CardContent>
+        </Card>
       </aside>
     </div>
   </>
@@ -389,7 +504,7 @@ export default function CompetitiveAnalysisPage() {
     <div className="flex flex-col min-h-screen bg-background">
       <main className="flex-grow container mx-auto py-6 sm:py-8 px-4 md:px-6">
         <div className="mb-6">
-           <Link href="/">
+          <Link href="/">
             <Button variant="outline">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard

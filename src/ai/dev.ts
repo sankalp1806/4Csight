@@ -8,3 +8,4 @@ import '@/ai/flows/generate-report-scores.ts';
 import '@/ai/flows/generate-consumer-analysis.ts';
 import '@/ai/flows/generate-cultural-analysis.ts';
 import '@/ai/flows/generate-category-analysis.ts';
+import '@/ai/flows/analyze-competitor.ts';
