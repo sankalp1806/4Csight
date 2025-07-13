@@ -315,6 +315,10 @@ function AddNewCompetitorCard({
     formState: { errors, isSubmitting },
   } = useForm<CompetitorFormValues>({
     resolver: zodResolver(competitorFormSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+    },
   });
 
   const onSubmit = async (data: CompetitorFormValues) => {
