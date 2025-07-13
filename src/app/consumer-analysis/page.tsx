@@ -17,6 +17,8 @@ import {
   Rocket,
   UserPlus,
   Puzzle,
+  ShoppingCart,
+  Radio,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -272,7 +274,7 @@ const CustomerSegmentCard = ({ segment }: { segment: CustomerSegment }) => (
           <p className="text-sm text-muted-foreground">Market Size</p>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 mb-6">
         <div>
           <h4 className="flex items-center gap-2 font-semibold text-foreground mb-2">
             <Users className="w-5 h-5 text-primary" /> Characteristics
@@ -290,6 +292,26 @@ const CustomerSegmentCard = ({ segment }: { segment: CustomerSegment }) => (
           <ul className="space-y-1 list-disc list-inside text-sm text-muted-foreground">
             {segment.keyNeeds.map((k, i) => (
               <li key={i}>{k}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h4 className="flex items-center gap-2 font-semibold text-foreground mb-2">
+            <ShoppingCart className="w-5 h-5 text-primary" /> Purchase Drivers
+          </h4>
+          <ul className="space-y-1 list-disc list-inside text-sm text-muted-foreground">
+            {segment.purchaseDrivers.map((pd, i) => (
+              <li key={i}>{pd}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h4 className="flex items-center gap-2 font-semibold text-foreground mb-2">
+            <Radio className="w-5 h-5 text-primary" /> Media Consumption
+          </h4>
+          <ul className="space-y-1 list-disc list-inside text-sm text-muted-foreground">
+            {segment.mediaConsumption.map((mc, i) => (
+              <li key={i}>{mc}</li>
             ))}
           </ul>
         </div>

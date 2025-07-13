@@ -40,6 +40,8 @@ const prompt = ai.definePrompt({
           - The estimated market size as a percentage.
           - A list of key characteristics.
           - A list of key needs or motivations.
+          - A list of primary **purchase drivers** (e.g., 'Price', 'Quality', 'Brand Reputation', 'Convenience').
+          - A list of primary **media consumption** channels (e.g., 'Social Media', 'News Websites', 'Podcasts', 'TV').
           - An "Analysis Confidence" score (0-100) representing how well this segment is understood based on available data.
   4.  **Extract Key Insights:**
       - Synthesize your findings into 3-4 actionable key insights.

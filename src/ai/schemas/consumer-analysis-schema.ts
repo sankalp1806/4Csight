@@ -43,6 +43,8 @@ export const CustomerSegmentSchema = z.object({
   marketSize: z.number().min(0).max(100).describe('Estimated market size percentage.'),
   characteristics: z.array(z.string()).describe('List of key characteristics of the segment.'),
   keyNeeds: z.array(z.string()).describe('List of key needs or motivations of the segment.'),
+  purchaseDrivers: z.array(z.string()).describe('Key factors that influence their purchasing decisions (e.g., Price, Quality, Brand Reputation).'),
+  mediaConsumption: z.array(z.string()).describe('Primary channels where this segment consumes media (e.g., Social Media, News Websites, Podcasts).'),
   analysisConfidence: z
     .number()
     .min(0)
