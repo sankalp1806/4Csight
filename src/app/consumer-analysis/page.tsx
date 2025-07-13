@@ -41,8 +41,11 @@ import { generateDeepDiveAnalysis } from '@/ai/flows/generate-deep-dive-analysis
 import type { DeepDiveAnalysis } from '@/ai/schemas/deep-dive-analysis-schema';
 import { generateJourneyMap } from '@/ai/flows/generate-journey-map';
 import type { JourneyMap } from '@/ai/schemas/journey-map-schema';
+import { AddSegmentDialog } from '@/components/add-segment-dialog';
+import { generateMarketResearch } from '@/ai/flows/generate-market-research';
+import type { MarketResearch } from '@/ai/schemas/market-research-schema';
 
-type AnalysisType = 'deep-dive' | 'journey-map' | null;
+type AnalysisType = 'deep-dive' | 'journey-map' | 'market-research' | null;
 
 function ConsumerAnalysisContent() {
   const searchParams = useSearchParams();
@@ -51,11 +54,12 @@ function ConsumerAnalysisContent() {
     null
   );
   const [loading, setLoading] = useState(true);
+  const [isAddSegmentDialogOpen, setIsAddSegmentDialogOpen] = useState(false);
 
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<CustomerSegment | null>(null);
   const [analysisType, setAnalysisType] = useState<AnalysisType>(null);
-  const [analysisResult, setAnalysisResult] = useState<DeepDiveAnalysis | JourneyMap | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<DeepDiveAnalysis | JourneyMap | MarketResearch | null>(null);
   const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
 
   const brandName = searchParams.get('brandName') || '';
@@ -90,8 +94,8 @@ function ConsumerAnalysisContent() {
     }
   }, [searchParams, toast, brandName, description, industry]);
 
-  const handleAnalysisClick = async (segment: CustomerSegment, type: NonNullable<AnalysisType>) => {
-    setSelectedSegment(segment);
+  const handleAnalysisClick = async (type: NonNullable<AnalysisType>, segment?: CustomerSegment) => {
+    setSelectedSegment(segment || null);
     setAnalysisType(type);
     setIsAnalysisDialogOpen(true);
     setIsAnalysisLoading(true);
@@ -99,11 +103,12 @@ function ConsumerAnalysisContent() {
 
     try {
       let result;
-      const input = { brandName, industry, description, segment };
-      if (type === 'deep-dive') {
-        result = await generateDeepDiveAnalysis(input);
-      } else if (type === 'journey-map') {
-        result = await generateJourneyMap(input);
+      if (type === 'deep-dive' && segment) {
+        result = await generateDeepDiveAnalysis({ brandName, industry, description, segment });
+      } else if (type === 'journey-map' && segment) {
+        result = await generateJourneyMap({ brandName, industry, description, segment });
+      } else if (type === 'market-research') {
+        result = await generateMarketResearch({ brandName, industry, description });
       }
       setAnalysisResult(result);
     } catch (error) {
@@ -118,6 +123,16 @@ function ConsumerAnalysisContent() {
       setIsAnalysisLoading(false);
     }
   };
+
+  const handleNewSegment = (newSegment: CustomerSegment) => {
+    setAnalysis(prev => {
+        if (!prev) return prev;
+        return {
+            ...prev,
+            customerSegments: [newSegment, ...prev.customerSegments],
+        }
+    });
+  }
 
 
   if (loading) {
@@ -199,10 +214,10 @@ function ConsumerAnalysisContent() {
           </p>
         </div>
         <div className="flex gap-2 shrink-0 w-full sm:w-auto">
-          <Button variant="outline" className="w-full sm:w-auto">
+          <Button variant="outline" className="w-full sm:w-auto" onClick={() => handleAnalysisClick('market-research')}>
             <Search className="mr-2 h-4 w-4" /> Market Research
           </Button>
-          <Button className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto" onClick={() => setIsAddSegmentDialogOpen(true)}>
             <UserPlus className="mr-2 h-4 w-4" /> New Segment
           </Button>
         </div>
@@ -233,8 +248,8 @@ function ConsumerAnalysisContent() {
                 <CustomerSegmentCard 
                   key={index} 
                   segment={segment} 
-                  onDeepDiveClick={() => handleAnalysisClick(segment, 'deep-dive')}
-                  onJourneyMapClick={() => handleAnalysisClick(segment, 'journey-map')}
+                  onDeepDiveClick={() => handleAnalysisClick('deep-dive', segment)}
+                  onJourneyMapClick={() => handleAnalysisClick('journey-map', segment)}
                 />
               ))}
             </div>
@@ -290,6 +305,14 @@ function ConsumerAnalysisContent() {
         segmentName={selectedSegment?.name || ''}
         analysisType={analysisType}
         analysisResult={analysisResult}
+        brandName={brandName}
+      />
+      <AddSegmentDialog 
+        open={isAddSegmentDialogOpen}
+        onOpenChange={setIsAddSegmentDialogOpen}
+        onSegmentAdded={handleNewSegment}
+        brandName={brandName}
+        industry={industry}
       />
     </>
   );
@@ -410,27 +433,51 @@ const KeyInsightItem = ({ insight, icon }: { insight: KeyInsight, icon: React.Re
 );
 
 
-function AnalysisDialog({ isOpen, setIsOpen, isLoading, segmentName, analysisType, analysisResult }: {
+function AnalysisDialog({ isOpen, setIsOpen, isLoading, segmentName, brandName, analysisType, analysisResult }: {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   isLoading: boolean;
   segmentName: string;
+  brandName: string;
   analysisType: AnalysisType;
-  analysisResult: DeepDiveAnalysis | JourneyMap | null;
+  analysisResult: DeepDiveAnalysis | JourneyMap | MarketResearch | null;
 }) {
   const isDeepDive = analysisType === 'deep-dive' && analysisResult && 'detailedCharacteristics' in analysisResult;
   const isJourneyMap = analysisType === 'journey-map' && analysisResult && 'stages' in analysisResult;
+  const isMarketResearch = analysisType === 'market-research' && analysisResult && 'summary' in analysisResult;
+
+  const getTitle = () => {
+      switch(analysisType) {
+          case 'deep-dive':
+            return <>Deep Dive Analysis for <span className="text-primary">{segmentName}</span></>
+          case 'journey-map':
+            return <>Customer Journey Map for <span className="text-primary">{segmentName}</span></>
+          case 'market-research':
+            return <>Market Research for <span className="text-primary">{brandName}</span></>
+          default:
+            return 'Analysis'
+      }
+  }
+  
+  const getDescription = () => {
+    switch(analysisType) {
+        case 'deep-dive':
+        case 'journey-map':
+          return 'AI-generated analysis for the selected customer segment.'
+        case 'market-research':
+          return 'AI-generated market research summary.'
+        default:
+          return ''
+    }
+}
+
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl">
-            {analysisType === 'deep-dive' ? 'Deep Dive Analysis' : 'Customer Journey Map'} for <span className="text-primary">{segmentName}</span>
-          </DialogTitle>
-          <DialogDescription>
-            AI-generated analysis for the selected customer segment.
-          </DialogDescription>
+          <DialogTitle className="text-2xl">{getTitle()}</DialogTitle>
+          <DialogDescription>{getDescription()}</DialogDescription>
         </DialogHeader>
         <div className="mt-4 max-h-[60vh] overflow-y-auto pr-4">
           {isLoading ? (
@@ -444,6 +491,7 @@ function AnalysisDialog({ isOpen, setIsOpen, isLoading, segmentName, analysisTyp
             <>
               {isDeepDive && <DeepDiveContent analysis={analysisResult as DeepDiveAnalysis} />}
               {isJourneyMap && <JourneyMapContent analysis={analysisResult as JourneyMap} />}
+              {isMarketResearch && <MarketResearchContent analysis={analysisResult as MarketResearch} />}
             </>
           )}
         </div>
@@ -498,6 +546,20 @@ function JourneyMapContent({ analysis }: { analysis: JourneyMap }) {
     </div>
   );
 }
+
+function MarketResearchContent({ analysis }: { analysis: MarketResearch }) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h4 className="flex items-center gap-2 text-lg font-semibold mb-2 text-primary">
+            <FileText className="w-5 h-5" />
+            Summary
+          </h4>
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{analysis.summary}</p>
+        </div>
+      </div>
+    );
+  }
 
 const AnalysisSkeleton = () => (
   <>
