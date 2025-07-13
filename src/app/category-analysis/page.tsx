@@ -95,28 +95,28 @@ function CategoryAnalysisContent() {
       value: topLevelMetrics.marketSize,
       change: topLevelMetrics.marketSizeChange,
       icon: <DollarSign className="w-6 h-6 text-blue-500" />,
-      gradient: 'from-blue-50 to-blue-100'
+      gradient: 'from-blue-50 to-blue-100/10'
     },
     {
       title: 'Growth Rate',
       value: topLevelMetrics.growthRate,
       change: topLevelMetrics.growthRateChange,
       icon: <TrendingUp className="w-6 h-6 text-green-500" />,
-      gradient: 'from-green-50 to-green-100'
+      gradient: 'from-green-50 to-green-100/10'
     },
     {
       title: 'Active Players',
       value: topLevelMetrics.activePlayers,
       change: topLevelMetrics.activePlayersChange,
       icon: <Users className="w-6 h-6 text-purple-500" />,
-      gradient: 'from-purple-50 to-purple-100'
+      gradient: 'from-purple-50 to-purple-100/10'
     },
     {
       title: 'Market Concentration',
       value: topLevelMetrics.marketConcentration,
       change: topLevelMetrics.marketConcentrationDescription,
       icon: <Target className="w-6 h-6 text-orange-500" />,
-      gradient: 'from-orange-50 to-orange-100'
+      gradient: 'from-orange-50 to-orange-100/10'
     },
   ];
 
