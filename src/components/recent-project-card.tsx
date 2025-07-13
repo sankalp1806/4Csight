@@ -5,17 +5,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Calendar, Eye, FileText, Tag } from 'lucide-react';
+import type { RecentProject } from '@/app/page';
+import Link from 'next/link';
 
 interface RecentProjectCardProps {
-  title: string;
-  description: string;
-  tag: string;
-  date: string;
-  progress: number;
-  status: 'completed' | 'in-progress';
+  project: RecentProject;
+  onReportClick: (project: RecentProject) => void;
 }
 
-export function RecentProjectCard({ title, description, tag, date, progress, status }: RecentProjectCardProps) {
+export function RecentProjectCard({ project, onReportClick }: RecentProjectCardProps) {
+  const { title, description, industry, date, progress, status } = project;
+
+  const viewLink = `/project/${project.id}?${new URLSearchParams({
+    title,
+    brandName: project.brandName,
+    description,
+    industry,
+  }).toString()}`;
+
   return (
     <Card>
       <CardContent className="p-4 sm:p-6">
@@ -25,7 +32,7 @@ export function RecentProjectCard({ title, description, tag, date, progress, sta
             <p className="text-sm text-muted-foreground mt-1 mb-3">{description}</p>
             <div className="flex items-center text-xs sm:text-sm text-muted-foreground gap-2">
               <Tag className="h-4 w-4" />
-              <span>{tag}</span>
+              <span>{industry}</span>
             </div>
           </div>
           <div className="flex flex-row sm:flex-col items-center sm:items-end shrink-0 gap-2">
@@ -50,10 +57,19 @@ export function RecentProjectCard({ title, description, tag, date, progress, sta
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4 mt-4 sm:mt-6">
-          <Button variant="outline" size="sm">
-            <Eye className="mr-1.5 h-4 w-4" /> View
-          </Button>
-          <Button variant="outline" size="sm">
+          <Link href={viewLink}>
+            <Button variant="outline" size="sm" asChild>
+              <a>
+                <Eye className="mr-1.5 h-4 w-4" /> View
+              </a>
+            </Button>
+          </Link>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => onReportClick(project)}
+            disabled={status !== 'completed'}
+          >
             <FileText className="mr-1.5 h-4 w-4" /> Report
           </Button>
         </div>

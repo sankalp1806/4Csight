@@ -18,6 +18,7 @@ import { NewAnalysisDialog } from "@/components/new-analysis-dialog";
 import { useRouter } from "next/navigation";
 import type { Generate4CsAnalysisInput } from "@/ai/schemas/4cs-analysis-schema";
 import { generate4CsAnalysis } from "@/ai/flows/generate-4cs-analysis";
+import { ReportDialog } from "@/components/report-dialog";
 
 const analysisTypes = [
   {
@@ -56,12 +57,14 @@ export interface RecentProject extends Generate4CsAnalysisInput {
   date: string;
   progress: number;
   status: 'completed' | 'in-progress';
+  executiveSummary?: string;
 }
 
 export default function DashboardPage() {
   const [recentProjects, setRecentProjects] = useState<RecentProject[]>([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const router = useRouter();
+  const [isNewAnalysisDialogOpen, setIsNewAnalysisDialogOpen] = useState(false);
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<RecentProject | null>(null);
 
   const handleNewProject = async (values: Generate4CsAnalysisInput) => {
     const projectId = new Date().toISOString();
@@ -76,23 +79,24 @@ export default function DashboardPage() {
       status: 'in-progress',
     };
     setRecentProjects(prev => [newProject, ...prev]);
-    setIsDialogOpen(false);
+    setIsNewAnalysisDialogOpen(false);
     
     try {
-      // Run analysis in the background
-      await generate4CsAnalysis(values);
-      // Once analysis is complete, update the project status
+      const result = await generate4CsAnalysis(values);
       setRecentProjects(prev => prev.map(p => 
-        p.id === projectId ? { ...p, status: 'completed', progress: 100 } : p
+        p.id === projectId ? { ...p, status: 'completed', progress: 100, executiveSummary: result.executiveSummary } : p
       ));
     } catch (error) {
       console.error("Failed to run analysis:", error);
-      // Optionally handle the error, e.g., show a toast notification
-      // and maybe revert the project status
       setRecentProjects(prev => prev.map(p => 
         p.id === projectId ? { ...p, status: 'in-progress', description: 'Failed to analyze' } : p
       ));
     }
+  };
+  
+  const handleOpenReport = (project: RecentProject) => {
+    setSelectedProject(project);
+    setIsReportDialogOpen(true);
   };
 
   return (
@@ -123,7 +127,7 @@ export default function DashboardPage() {
               </p>
             </div>
           </div>
-          <Button className="hidden sm:flex bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" onClick={() => setIsDialogOpen(true)}>
+          <Button className="hidden sm:flex bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" onClick={() => setIsNewAnalysisDialogOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             New Analysis Project
           </Button>
@@ -147,8 +151,12 @@ export default function DashboardPage() {
               </div>
               <div className="space-y-4 sm:space-y-6">
                 {recentProjects.length > 0 ? (
-                  recentProjects.map((project, index) => (
-                    <RecentProjectCard key={index} {...project} tag={project.industry} />
+                  recentProjects.map((project) => (
+                    <RecentProjectCard 
+                      key={project.id} 
+                      project={project} 
+                      onReportClick={handleOpenReport}
+                    />
                   ))
                 ) : (
                   <div className="text-center py-10 border-2 border-dashed rounded-lg">
@@ -167,9 +175,14 @@ export default function DashboardPage() {
         </div>
       </main>
       <NewAnalysisDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
+        open={isNewAnalysisDialogOpen}
+        onOpenChange={setIsNewAnalysisDialogOpen}
         onSubmit={handleNewProject}
+      />
+      <ReportDialog
+        open={isReportDialogOpen}
+        onOpenChange={setIsReportDialogOpen}
+        project={selectedProject}
       />
     </div>
   );
