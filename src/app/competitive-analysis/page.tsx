@@ -33,10 +33,9 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense, useEffect, useState } from 'react';
 import {
-  Competitor,
-  generate4CsAnalysis,
-  Generate4CsAnalysisOutput,
+  generate4CsAnalysis
 } from '@/ai/flows/generate-4cs-analysis';
+import type { Competitor, Generate4CsAnalysisOutput } from '@/ai/schemas/4cs-analysis-schema';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function CompetitiveAnalysisContent() {

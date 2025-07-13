@@ -15,8 +15,8 @@ import {
 import { Menu } from 'lucide-react';
 import React, { useState } from "react";
 import { NewAnalysisDialog } from "@/components/new-analysis-dialog";
-import { generate4CsAnalysis, Generate4CsAnalysisInput, Generate4CsAnalysisOutput } from "@/ai/flows/generate-4cs-analysis";
 import { useRouter } from "next/navigation";
+import type { Generate4CsAnalysisInput } from "@/ai/schemas/4cs-analysis-schema";
 
 const analysisTypes = [
   {

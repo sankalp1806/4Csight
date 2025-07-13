@@ -25,6 +25,7 @@ import { useState } from 'react';
 import { Textarea } from './ui/textarea';
 import { Alert, AlertDescription } from './ui/alert';
 import { Terminal } from 'lucide-react';
+import type { Generate4CsAnalysisInput } from '@/ai/schemas/4cs-analysis-schema';
 
 const formSchema = z.object({
   brandName: z.string().min(1, { message: 'Brand name is required.' }),
@@ -47,7 +48,7 @@ type FormValues = z.infer<typeof formSchema>;
 interface NewAnalysisDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: FormValues) => Promise<void>;
+  onSubmit: (values: Generate4CsAnalysisInput) => Promise<void>;
 }
 
 export function NewAnalysisDialog({ open, onOpenChange, onSubmit }: NewAnalysisDialogProps) {
@@ -74,8 +75,9 @@ export function NewAnalysisDialog({ open, onOpenChange, onSubmit }: NewAnalysisD
 
   const handleFormSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
-    const submissionValues = {
-        ...values,
+    const submissionValues: Generate4CsAnalysisInput = {
+        brandName: values.brandName,
+        description: values.description,
         industry: values.industry === 'Other' ? values.otherIndustry || '' : values.industry,
     };
     await onSubmit(submissionValues);

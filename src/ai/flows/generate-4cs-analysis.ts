@@ -3,39 +3,10 @@
  * @fileOverview Generates a comprehensive 4Cs analysis (Competition, Culture, Consumer, Category) for a given brand or business using an LLM.
  *
  * - generate4CsAnalysis - A function that generates the 4Cs analysis.
- * - Generate4CsAnalysisInput - The input type for the generate4CsAnalysis function.
- * - Generate4CsAnalysisOutput - The return type for the generate4CsAnalysis function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
-
-export const Generate4CsAnalysisInputSchema = z.object({
-  brandName: z.string().describe('The name of the brand or business to analyze.'),
-  description: z.string().describe('A description of the project, business model, and objectives.'),
-  industry: z.string().describe('The industry the business operates in.'),
-});
-export type Generate4CsAnalysisInput = z.infer<typeof Generate4CsAnalysisInputSchema>;
-
-export const CompetitorSchema = z.object({
-  name: z.string().describe('The name of the competitor.'),
-  type: z.enum(['Direct', 'Indirect', 'Substitute']).describe('The type of competitor.'),
-  marketShare: z.number().describe('Estimated market share percentage.'),
-  rating: z.number().min(0).max(5).describe('A competitive rating from 1 to 5.'),
-  strengths: z.array(z.string()).describe('A list of key strengths.'),
-  weaknesses: z.array(z.string()).describe('A list of key weaknesses.'),
-});
-export type Competitor = z.infer<typeof CompetitorSchema>;
-
-
-const Generate4CsAnalysisOutputSchema = z.object({
-  competition: z.array(CompetitorSchema).describe('A list of competitors with their analysis.'),
-  culture: z.string().describe('Analysis of relevant cultural trends and alignment.'),
-  consumer: z.string().describe('Analysis of the target consumer segments.'),
-  category: z.string().describe('Analysis of the product or service category.'),
-  executiveSummary: z.string().describe('Executive summary with prioritized action items.'),
-});
-export type Generate4CsAnalysisOutput = z.infer<typeof Generate4CsAnalysisOutputSchema>;
+import { Generate4CsAnalysisInputSchema, Generate4CsAnalysisOutputSchema, type Generate4CsAnalysisInput, type Generate4CsAnalysisOutput } from '@/ai/schemas/4cs-analysis-schema';
 
 export async function generate4CsAnalysis(input: Generate4CsAnalysisInput): Promise<Generate4CsAnalysisOutput> {
   return generate4CsAnalysisFlow(input);
