@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu } from 'lucide-react';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { NewAnalysisDialog } from "@/components/new-analysis-dialog";
 import { useRouter } from "next/navigation";
 import type { Generate4CsAnalysisInput } from "@/ai/schemas/4cs-analysis-schema";
@@ -77,6 +77,7 @@ export default function DashboardPage() {
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<RecentProject | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<RecentProject | null>(null);
+  const isInitialLoad = useRef(true);
 
   useEffect(() => {
     try {
@@ -90,6 +91,10 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    if (isInitialLoad.current) {
+        isInitialLoad.current = false;
+        return;
+    }
     try {
       localStorage.setItem('recentProjects', JSON.stringify(recentProjects));
     } catch (error) {
