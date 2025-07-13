@@ -120,7 +120,7 @@ function CategoryAnalysisContent() {
     {
       title: 'Market Concentration',
       value: topLevelMetrics.marketConcentration,
-      change: topLevelMetrics.marketConcentrationDescription,
+      description: topLevelMetrics.marketConcentrationDescription,
       icon: <Target className="w-6 h-6 text-orange-500" />,
       gradient: 'from-orange-50 to-orange-100/10'
     },
@@ -215,16 +215,17 @@ function CategoryAnalysisContent() {
   );
 }
 
-const MetricCard = ({ title, value, change, icon, gradient }: { title: string, value: string | number, change: string, icon: React.ReactNode, gradient: string }) => (
-  <Card className={`border-none bg-gradient-to-br ${gradient}`}>
-    <CardContent className="p-6">
-      <div className="p-2 inline-block rounded-lg bg-white/50">{icon}</div>
-      <p className="text-3xl font-bold mt-2">{value}</p>
-      <p className="text-muted-foreground text-sm">{title}</p>
-      <p className={`text-sm font-medium mt-1 ${change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>{change}</p>
-    </CardContent>
-  </Card>
-);
+const MetricCard = ({ title, value, change, icon, gradient, description }: { title: string, value: string | number, change?: string, icon: React.ReactNode, gradient: string, description?: string }) => (
+    <Card className={`border-none bg-gradient-to-br ${gradient}`}>
+      <CardContent className="p-6">
+        <div className="p-2 inline-block rounded-lg bg-white/50">{icon}</div>
+        <p className="text-3xl font-bold mt-2">{value}</p>
+        <p className="text-muted-foreground text-sm">{title}</p>
+        {change && <p className={`text-sm font-medium mt-1 ${change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>{change}</p>}
+        {description && <p className="text-sm text-destructive mt-1">{description}</p>}
+      </CardContent>
+    </Card>
+  );
 
 const MarketSegmentCard = ({ segment }: { segment: MarketSegment }) => (
   <Card className="border-none bg-gradient-to-br from-card to-muted/20">

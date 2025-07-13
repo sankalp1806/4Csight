@@ -19,7 +19,7 @@ export const TopLevelMetricSchema = z.object({
     activePlayers: z.number().describe('The number of active players in the market.'),
     activePlayersChange: z.string().describe('The recent change in the number of active players, e.g., "+12".'),
     marketConcentration: z.string().describe('The level of market concentration, e.g., "Moderate".'),
-    marketConcentrationDescription: z.string().describe('A brief description of the market concentration, e.g., "Stable".'),
+    marketConcentrationDescription: z.string().describe('A brief description of the market concentration, e.g., "The market is dominated by a few major players...".'),
 });
 export type TopLevelMetric = z.infer<typeof TopLevelMetricSchema>;
 

@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Generates a comprehensive category analysis for a given brand or business.
@@ -24,19 +25,20 @@ const prompt = ai.definePrompt({
   input: {schema: GenerateCategoryAnalysisInputSchema},
   output: {schema: GenerateCategoryAnalysisOutputSchema},
   prompt: `You are a market research expert specializing in category analysis.
-  Your task is to analyze the market category for the given business based on the provided information, supplementing it with real-time web searches for current data.
+  Your task is to analyze the market category for the given business based on the provided information, supplementing it with **real-time web searches for the latest and most accurate data available.**
 
   Brand to Analyze: {{{brandName}}}
   Business Description: {{{description}}}
   Industry: {{{industry}}}
 
   Instructions:
-  1.  **Perform Web Searches:** Use your search capabilities to find up-to-date information about the market category, including its size, growth trends, key segments, and competitive landscape.
+  1.  **Perform Real-Time Web Searches:** Use your search capabilities to find the most current and accurate data for all requested metrics.
   2.  **Generate Top-Level Metrics:** Provide key metrics for the category, including:
-      - Market Size (e.g., "$12.5B") and its recent percentage change (e.g., "+15%").
-      - Overall Growth Rate (e.g., "8.5%") and its recent percentage change (e.g., "+2.1%").
+      - Market Size (e.g., "$12.5B") and its recent percentage change (e.g., "+15%"). This must be based on the latest reports.
+      - Overall Growth Rate (e.g., "8.5%") and its recent percentage change (e.g., "+2.1%"). This must be based on the latest reports.
       - Estimated Number of Active Players and its recent change (e.g., "+12").
-      - Market Concentration level (e.g., "Moderate") and a brief description (e.g., "Stable").
+      - Market Concentration level (e.g., "Moderate").
+      - Market Concentration Description: Provide a one-sentence summary explaining the concentration (e.g., "The market is dominated by a few major players...").
   3.  **Identify and Detail Market Segments:**
       - Identify 4-5 key market segments within the category.
       - For each segment, provide:
