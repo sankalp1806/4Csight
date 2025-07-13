@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -103,28 +104,32 @@ function ConsumerAnalysisContent() {
       description: 'Age, income, location, education',
       progress: analysis.topLevelMetrics.demographics,
       icon: <Users className="h-6 w-6" />,
-      color: 'text-blue-500 bg-blue-50',
+      color: 'text-blue-500',
+      gradient: 'from-blue-50 to-blue-100'
     },
     {
       title: 'Psychographics',
       description: 'Values, interests, lifestyle, personality',
       progress: analysis.topLevelMetrics.psychographics,
       icon: <Puzzle className="h-6 w-6" />,
-      color: 'text-purple-500 bg-purple-50',
+      color: 'text-purple-500',
+      gradient: 'from-purple-50 to-purple-100'
     },
     {
       title: 'Behavioral Patterns',
       description: 'Purchase behavior, usage patterns',
       progress: analysis.topLevelMetrics.behavioralPatterns,
       icon: <BarChart2 className="h-6 w-6" />,
-      color: 'text-green-500 bg-green-50',
+      color: 'text-green-500',
+      gradient: 'from-green-50 to-green-100'
     },
     {
       title: 'Customer Journey',
       description: 'Touchpoints and decision process',
       progress: analysis.topLevelMetrics.customerJourney,
       icon: <Map className="h-6 w-6" />,
-      color: 'text-orange-500 bg-orange-50',
+      color: 'text-orange-500',
+      gradient: 'from-orange-50 to-orange-100'
     },
   ];
 
@@ -189,7 +194,7 @@ function ConsumerAnalysisContent() {
         </div>
 
         <aside className="space-y-8 sticky top-8">
-          <Card>
+          <Card className="border-none bg-gradient-to-br from-card to-muted/20">
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
                 <Lightbulb className="w-5 h-5" /> Key Insights
@@ -216,7 +221,7 @@ function ConsumerAnalysisContent() {
               <Rocket className="mr-2 h-4 w-4" /> Generate Personas
             </Button>
           </div>
-           <Card>
+           <Card className="border-none bg-gradient-to-br from-card to-muted/20">
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
                 Quick Actions
@@ -240,16 +245,18 @@ const MetricCard = ({
   progress,
   icon,
   color,
+  gradient,
 }: {
   title: string;
   description: string;
   progress: number;
   icon: React.ReactNode;
   color: string;
+  gradient: string;
 }) => (
-  <Card>
+  <Card className={`border-none bg-gradient-to-br ${gradient}`}>
     <CardContent className="p-4">
-      <div className={`p-2 inline-block rounded-lg ${color}`}>{icon}</div>
+      <div className={`p-2 inline-block rounded-lg bg-white/50 ${color}`}>{icon}</div>
       <h3 className="text-md font-semibold mt-4">{title}</h3>
       <p className="text-muted-foreground text-sm mt-1">{description}</p>
       <div className="flex items-center gap-2 mt-4">
@@ -262,7 +269,7 @@ const MetricCard = ({
 );
 
 const CustomerSegmentCard = ({ segment }: { segment: CustomerSegment }) => (
-  <Card>
+  <Card className="border-none bg-gradient-to-br from-card to-muted/20">
     <CardContent className="p-6">
       <div className="flex justify-between items-start mb-4">
         <div>

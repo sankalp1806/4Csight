@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -89,19 +90,6 @@ function CulturalAnalysisContent() {
       </div>
     );
   }
-
-  const getBadgeVariant = (
-    value: string
-  ): 'default' | 'secondary' | 'destructive' => {
-    const lowerValue = value.toLowerCase();
-    if (lowerValue.includes('strong') || lowerValue.includes('high'))
-      return 'default';
-    if (lowerValue.includes('moderate') || lowerValue.includes('medium'))
-      return 'secondary';
-    if (lowerValue.includes('weak') || lowerValue.includes('low'))
-      return 'destructive';
-    return 'secondary';
-  };
   
   const getBadgeClass = (value: string): string => {
     const lowerValue = value.toLowerCase();
@@ -218,7 +206,7 @@ const PrevailingTrendCard = ({
   trend: PrevailingTrend;
   getBadgeClass: (value: string) => string;
 }) => (
-  <Card>
+  <Card className="border-none bg-gradient-to-br from-card to-muted/20">
     <CardContent className="p-6">
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-semibold flex items-center">
@@ -242,7 +230,7 @@ const PrevailingTrendCard = ({
 );
 
 const CoreValueCard = ({ value, getBadgeClass }: { value: CoreValue, getBadgeClass: (value: string) => string; }) => (
-  <Card>
+  <Card className="border-none bg-gradient-to-br from-card to-muted/20">
     <CardContent className="p-6">
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-semibold">{value.value}</h3>
@@ -267,7 +255,7 @@ const CulturalOpportunityCard = ({
   opportunity: CulturalOpportunity;
   getBadgeClass: (value: string) => string;
 }) => (
-  <Card>
+  <Card className="border-none bg-gradient-to-br from-card to-muted/20">
     <CardContent className="p-6">
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-semibold">{opportunity.opportunity}</h3>
@@ -282,7 +270,7 @@ const CulturalOpportunityCard = ({
 );
 
 const CulturalFitScoreCard = ({ score, getBadgeClass }: { score: GenerateCulturalAnalysisOutput['culturalFitScore'], getBadgeClass: (value: string) => string }) => (
-  <Card>
+  <Card className="border-none bg-gradient-to-br from-card to-muted/20">
     <CardHeader>
       <CardTitle className="flex items-center gap-2">
         <AreaChart className="w-5 h-5" />
@@ -326,7 +314,7 @@ const CulturalMonitoringCard = () => (
 );
 
 const RegionalInsightsCard = ({ insights }: { insights: GenerateCulturalAnalysisOutput['regionalInsights'] }) => (
-  <Card>
+  <Card className="border-none bg-gradient-to-br from-card to-muted/20">
     <CardHeader>
       <CardTitle className="flex items-center gap-2">
         <Globe className="w-5 h-5" />

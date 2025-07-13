@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -138,27 +139,24 @@ function CompetitiveAnalysisContent() {
           description="Same products/services to same target market"
           count={counts.direct}
           icon={<Briefcase className="w-6 h-6" />}
-          color="text-red-500"
-          bgColor="bg-red-50"
-          badgeColor="bg-red-100"
+          color="text-red-700"
+          gradient="from-red-50 to-red-100"
         />
         <CompetitorTypeCard
           title="Indirect Competitors"
           description="Different products targeting same customers"
           count={counts.indirect}
           icon={<Users className="w-6 h-6" />}
-          color="text-yellow-500"
-          bgColor="bg-yellow-50"
-          badgeColor="bg-yellow-100"
+          color="text-yellow-700"
+          gradient="from-yellow-50 to-yellow-100"
         />
         <CompetitorTypeCard
           title="Substitute Competitors"
           description="Alternative solutions for same needs"
           count={counts.substitute}
           icon={<Lightbulb className="w-6 h-6" />}
-          color="text-blue-500"
-          bgColor="bg-blue-50"
-          badgeColor="bg-blue-100"
+          color="text-blue-700"
+          gradient="from-blue-50 to-blue-100"
         />
       </div>
 
@@ -183,7 +181,7 @@ function CompetitiveAnalysisContent() {
             </div>
           </section>
         </div>
-        <aside className="space-y-8">
+        <aside className="space-y-8 sticky top-8">
           <AddNewCompetitorCard />
           <AIPoweredResearchCard />
         </aside>
@@ -198,27 +196,20 @@ const CompetitorTypeCard = ({
   count,
   icon,
   color,
-  bgColor,
-  badgeColor,
+  gradient,
 }: {
   title: string;
   description: string;
   count: number;
   icon: React.ReactNode;
   color: string;
-  bgColor: string;
-  badgeColor: string;
+  gradient: string;
 }) => (
-  <Card className="text-center p-6 flex flex-col items-center justify-center">
-    <div className={`p-3 rounded-full ${bgColor} ${color}`}>{icon}</div>
-    <h3 className="text-lg font-semibold mt-4">{title}</h3>
+  <Card className={`text-center p-6 flex flex-col items-center justify-center border-none bg-gradient-to-br ${gradient}`}>
+    <div className={`p-3 rounded-full bg-white/50 ${color}`}>{icon}</div>
+    <h3 className={`text-lg font-semibold mt-4 ${color}`}>{title}</h3>
     <p className="text-muted-foreground text-sm mt-1">{description}</p>
-    <div className="text-5xl font-bold mt-4">{count}</div>
-    <div
-      className={`mt-2 text-xs font-medium px-2 py-1 rounded-full ${badgeColor} ${color}`}
-    >
-      Identified
-    </div>
+    <div className={`text-5xl font-bold mt-4 ${color}`}>{count}</div>
   </Card>
 );
 
@@ -230,7 +221,7 @@ const IdentifiedCompetitorCard = (competitor: Competitor) => {
   };
 
   return (
-    <Card>
+    <Card className="border-none bg-gradient-to-br from-card to-muted/20">
       <CardContent className="p-6">
         <div className="flex flex-col sm:flex-row gap-6">
           <div className="flex-grow">
@@ -298,7 +289,7 @@ const IdentifiedCompetitorCard = (competitor: Competitor) => {
 };
 
 const AddNewCompetitorCard = () => (
-  <Card>
+  <Card className="border-none bg-gradient-to-br from-card to-muted/20">
     <CardHeader>
       <CardTitle className="flex items-center gap-2">
         <Plus className="w-5 h-5" />

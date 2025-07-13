@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -94,24 +95,28 @@ function CategoryAnalysisContent() {
       value: topLevelMetrics.marketSize,
       change: topLevelMetrics.marketSizeChange,
       icon: <DollarSign className="w-6 h-6 text-blue-500" />,
+      gradient: 'from-blue-50 to-blue-100'
     },
     {
       title: 'Growth Rate',
       value: topLevelMetrics.growthRate,
       change: topLevelMetrics.growthRateChange,
       icon: <TrendingUp className="w-6 h-6 text-green-500" />,
+      gradient: 'from-green-50 to-green-100'
     },
     {
       title: 'Active Players',
       value: topLevelMetrics.activePlayers,
       change: topLevelMetrics.activePlayersChange,
       icon: <Users className="w-6 h-6 text-purple-500" />,
+      gradient: 'from-purple-50 to-purple-100'
     },
     {
       title: 'Market Concentration',
       value: topLevelMetrics.marketConcentration,
       change: topLevelMetrics.marketConcentrationDescription,
       icon: <Target className="w-6 h-6 text-orange-500" />,
+      gradient: 'from-orange-50 to-orange-100'
     },
   ];
 
@@ -187,19 +192,19 @@ function CategoryAnalysisContent() {
   );
 }
 
-const MetricCard = ({ title, value, change, icon }: { title: string, value: string | number, change: string, icon: React.ReactNode }) => (
-  <Card>
+const MetricCard = ({ title, value, change, icon, gradient }: { title: string, value: string | number, change: string, icon: React.ReactNode, gradient: string }) => (
+  <Card className={`border-none bg-gradient-to-br ${gradient}`}>
     <CardContent className="p-6">
-      {icon}
+      <div className="p-2 inline-block rounded-lg bg-white/50">{icon}</div>
       <p className="text-3xl font-bold mt-2">{value}</p>
       <p className="text-muted-foreground text-sm">{title}</p>
-      <p className={`text-sm font-medium mt-1 ${change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{change}</p>
+      <p className={`text-sm font-medium mt-1 ${change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>{change}</p>
     </CardContent>
   </Card>
 );
 
 const MarketSegmentCard = ({ segment }: { segment: MarketSegment }) => (
-  <Card>
+  <Card className="border-none bg-gradient-to-br from-card to-muted/20">
     <CardContent className="p-4">
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-semibold flex items-center">{segment.name} {segment.trend === 'up' ? <TrendingUp className="w-4 h-4 text-green-500 ml-1" /> : <ArrowDown className="w-4 h-4 text-red-500 ml-1" />}</h3>
@@ -232,7 +237,7 @@ const DemandDriverCard = ({ driver }: { driver: DemandDriver }) => {
   };
 
   return (
-    <Card>
+    <Card className="border-none bg-gradient-to-br from-card to-muted/20">
       <CardContent className="p-4 flex justify-between items-center">
         <div>
           <h3 className="font-semibold">{driver.name}</h3>
@@ -256,7 +261,7 @@ const CategoryHealthCard = ({ health }: { health: GenerateCategoryAnalysisOutput
             default: return 'text-gray-500';
         }
     }
-   return( <Card>
+   return( <Card className="border-none bg-gradient-to-br from-card to-muted/20">
         <CardHeader>
              <CardTitle className="flex items-center gap-2 text-xl">
                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -303,7 +308,7 @@ const MarketForecastCard = () => (
 );
 
 const QuickAnalysisCard = () => (
-    <Card>
+    <Card className="border-none bg-gradient-to-br from-card to-muted/20">
       <CardHeader>
         <CardTitle className="text-xl">Quick Analysis</CardTitle>
       </CardHeader>
