@@ -31,18 +31,24 @@ import type {
   MarketSegment,
   DemandDriver,
 } from '@/ai/schemas/category-analysis-schema';
+import { MarketResearchDialog } from '@/components/market-research-dialog';
+import { AiInsightsDialog } from '@/components/category-ai-insights-dialog';
+import { MarketForecastDialog } from '@/components/market-forecast-dialog';
 
 function CategoryAnalysisContent() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const [analysis, setAnalysis] = useState<GenerateCategoryAnalysisOutput | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isMarketResearchOpen, setIsMarketResearchOpen] = useState(false);
+  const [isAiInsightsOpen, setIsAiInsightsOpen] = useState(false);
+  const [isMarketForecastOpen, setIsMarketForecastOpen] = useState(false);
+
+  const brandName = searchParams.get('brandName') || '';
+  const industry = searchParams.get('industry') || '';
+  const description = searchParams.get('description') || '';
 
   useEffect(() => {
-    const brandName = searchParams.get('brandName');
-    const description = searchParams.get('description');
-    const industry = searchParams.get('industry');
-
     if (brandName && description && industry) {
       const fetchAnalysis = async () => {
         setLoading(true);
@@ -64,7 +70,7 @@ function CategoryAnalysisContent() {
     } else {
       setLoading(false);
     }
-  }, [searchParams, toast]);
+  }, [searchParams, toast, brandName, description, industry]);
 
   if (loading) {
     return <AnalysisSkeleton />;
@@ -130,10 +136,10 @@ function CategoryAnalysisContent() {
           </p>
         </div>
         <div className="flex gap-2 shrink-0 w-full sm:w-auto">
-          <Button variant="outline" className="w-full sm:w-auto">
+          <Button variant="outline" className="w-full sm:w-auto" onClick={() => setIsMarketResearchOpen(true)}>
             <Search className="mr-2 h-4 w-4" /> Market Research
           </Button>
-          <Button className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto" onClick={() => setIsAiInsightsOpen(true)}>
             <Zap className="mr-2 h-4 w-4" /> AI Insights
           </Button>
         </div>
@@ -184,10 +190,27 @@ function CategoryAnalysisContent() {
         
         <aside className="space-y-8 sticky top-8">
           <CategoryHealthCard health={categoryHealth} />
-          <MarketForecastCard />
+          <MarketForecastCard onGenerateClick={() => setIsMarketForecastOpen(true)} />
           <QuickAnalysisCard />
         </aside>
       </div>
+
+      <MarketResearchDialog
+        open={isMarketResearchOpen}
+        onOpenChange={setIsMarketResearchOpen}
+        brandName={brandName}
+        industry={industry}
+        description={description}
+      />
+      <AiInsightsDialog
+        open={isAiInsightsOpen}
+        onOpenChange={setIsAiInsightsOpen}
+        analysis={analysis}
+      />
+      <MarketForecastDialog
+        open={isMarketForecastOpen}
+        onOpenChange={setIsMarketForecastOpen}
+      />
     </>
   );
 }
@@ -292,7 +315,7 @@ const CategoryHealthCard = ({ health }: { health: GenerateCategoryAnalysisOutput
    )
 };
 
-const MarketForecastCard = () => (
+const MarketForecastCard = ({ onGenerateClick }: { onGenerateClick: () => void }) => (
   <div className="p-6 rounded-lg text-center bg-gradient-to-br from-primary to-purple-600 text-primary-foreground">
     <h3 className="text-lg sm:text-xl font-bold">Market Forecast</h3>
     <p className="mt-2 text-xs sm:text-sm opacity-90">
@@ -301,6 +324,7 @@ const MarketForecastCard = () => (
     <Button
       variant="secondary"
       className="mt-4 bg-white/90 hover:bg-white text-primary font-semibold text-sm"
+      onClick={onGenerateClick}
     >
       Generate Forecast
     </Button>

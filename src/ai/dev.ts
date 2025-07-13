@@ -21,3 +21,4 @@ import '@/ai/flows/generate-psychographics.ts';
 import '@/ai/flows/generate-behavioral-patterns.ts';
 import '@/ai/flows/generate-global-trends.ts';
 import '@/ai/flows/generate-cultural-insights.ts';
+import '@/ai/flows/generate-category-insights.ts';
