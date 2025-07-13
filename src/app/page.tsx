@@ -2,7 +2,6 @@
 'use client';
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import Link from 'next/link';
 import { AnalysisCard } from "@/components/analysis-card";
 import { RecentProjectCard } from "@/components/recent-project-card";
 import { QuickStats } from "@/components/quick-stats";
@@ -14,6 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu } from 'lucide-react';
+import React, { useState } from "react";
+import { NewAnalysisDialog } from "@/components/new-analysis-dialog";
+import { generate4CsAnalysis, Generate4CsAnalysisOutput } from "@/ai/flows/generate-4cs-analysis";
 
 const analysisTypes = [
   {
@@ -46,9 +48,41 @@ const analysisTypes = [
   }
 ];
 
-const recentProjects: any[] = [];
+export interface RecentProject extends Generate4CsAnalysisOutput {
+  id: string;
+  title: string;
+  description: string;
+  tag: string;
+  date: string;
+  progress: number;
+  status: 'completed' | 'in-progress';
+}
 
 export default function DashboardPage() {
+  const [recentProjects, setRecentProjects] = useState<RecentProject[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleNewProject = async (values: { brandName: string; emphasis?: 'Competition' | 'Culture' | 'Consumer' | 'Category' }) => {
+    try {
+      const analysis = await generate4CsAnalysis(values);
+      const newProject: RecentProject = {
+        id: new Date().toISOString(),
+        title: `${values.brandName} 4Cs Analysis`,
+        description: `Full strategic analysis for ${values.brandName}`,
+        tag: values.emphasis || 'General',
+        date: new Date().toLocaleDateString(),
+        progress: 100,
+        status: 'completed',
+        ...analysis,
+      };
+      setRecentProjects(prev => [newProject, ...prev]);
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to generate analysis:", error);
+      // Here you could show a toast notification to the user
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <main className="flex-grow container mx-auto py-6 sm:py-8 px-4 md:px-6 space-y-8 sm:space-y-10">
@@ -77,7 +111,7 @@ export default function DashboardPage() {
               </p>
             </div>
           </div>
-          <Button className="hidden sm:flex bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+          <Button className="hidden sm:flex bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" onClick={() => setIsDialogOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             New Analysis Project
           </Button>
@@ -120,6 +154,11 @@ export default function DashboardPage() {
           </aside>
         </div>
       </main>
+      <NewAnalysisDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onSubmit={handleNewProject}
+      />
     </div>
   );
 }
