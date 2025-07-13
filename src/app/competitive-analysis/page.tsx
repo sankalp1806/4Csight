@@ -145,7 +145,7 @@ function CompetitiveAnalysisContent() {
           count={counts.direct}
           icon={<Briefcase className="w-6 h-6" />}
           color="text-red-700"
-          gradient="from-red-50 to-red-100"
+          gradient="from-red-50 to-red-100/10"
         />
         <CompetitorTypeCard
           title="Indirect Competitors"
@@ -153,7 +153,7 @@ function CompetitiveAnalysisContent() {
           count={counts.indirect}
           icon={<Users className="w-6 h-6" />}
           color="text-yellow-700"
-          gradient="from-yellow-50 to-yellow-100"
+          gradient="from-yellow-50 to-yellow-100/10"
         />
         <CompetitorTypeCard
           title="Substitute Competitors"
@@ -161,7 +161,7 @@ function CompetitiveAnalysisContent() {
           count={counts.substitute}
           icon={<Lightbulb className="w-6 h-6" />}
           color="text-blue-700"
-          gradient="from-blue-50 to-blue-100"
+          gradient="from-blue-50 to-blue-100/10"
         />
       </div>
 
@@ -317,6 +317,7 @@ function AddNewCompetitorCard({
     resolver: zodResolver(competitorFormSchema),
     defaultValues: {
       name: '',
+      type: undefined,
       description: '',
     },
   });
@@ -522,3 +523,5 @@ export default function CompetitiveAnalysisPage() {
     </div>
   );
 }
+
+    
