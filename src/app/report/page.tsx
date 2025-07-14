@@ -124,9 +124,9 @@ function ReportContent() {
         await fallbackCopy();
       }
     } catch (error) {
-      // This can happen if the user dismisses the share sheet or if there's a permission issue.
-      console.error("Failed to share, falling back to copy:", error);
-      await fallbackCopy();
+      // This can happen if the user dismisses the share sheet or if there's another issue.
+      // We can safely ignore this error or log it if needed.
+      console.log("Share action was cancelled or failed:", error);
     }
   };
 
