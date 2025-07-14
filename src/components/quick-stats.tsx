@@ -14,7 +14,7 @@ export function QuickStats({ projects }: QuickStatsProps) {
   const inProgressProjects = projects.filter(p => p.status === 'in-progress').length;
 
   return (
-    <Card>
+    <Card className="bg-transparent border-none shadow-none">
       <CardHeader className="p-4 sm:p-6">
         <div className="flex items-center gap-3">
             <Eye className="h-6 w-6 text-foreground" />
