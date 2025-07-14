@@ -4,6 +4,7 @@
  *
  * - Generate4CsAnalysisInputSchema, Generate4CsAnalysisInput
  * - CompetitorSchema, Competitor
+ * - ScoreSchema, Score
  * - Generate4CsAnalysisOutputSchema, Generate4CsAnalysisOutput
  */
 
@@ -26,6 +27,12 @@ export const CompetitorSchema = z.object({
 });
 export type Competitor = z.infer<typeof CompetitorSchema>;
 
+const ScoreSchema = z.object({
+    score: z.number().min(0).max(10).describe('A score from 0 to 10 for the category.'),
+    description: z.string().describe('A short, two-word description summarizing the score.'),
+});
+export type Score = z.infer<typeof ScoreSchema>;
+
 
 export const Generate4CsAnalysisOutputSchema = z.object({
   competition: z.array(CompetitorSchema).describe('A list of competitors with their analysis.'),
@@ -33,5 +40,11 @@ export const Generate4CsAnalysisOutputSchema = z.object({
   consumer: z.string().describe('Analysis of the target consumer segments.'),
   category: z.string().describe('Analysis of the product or service category.'),
   executiveSummary: z.string().describe('Executive summary with prioritized action items.'),
+  scores: z.object({
+      competition: ScoreSchema,
+      consumer: ScoreSchema,
+      culture: ScoreSchema,
+      category: ScoreSchema,
+  }).describe("Scores for each of the 4C categories.")
 });
 export type Generate4CsAnalysisOutput = z.infer<typeof Generate4CsAnalysisOutputSchema>;

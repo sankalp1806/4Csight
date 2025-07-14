@@ -17,7 +17,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense, useEffect, useState, useRef } from 'react';
-import { generateReportScores } from '@/ai/flows/generate-report-scores';
 import type { GenerateReportScoresOutput } from '@/ai/schemas/report-scores-schema';
 import Link from 'next/link';
 import jsPDF from 'jspdf';
@@ -64,34 +63,26 @@ function ReportContent() {
 
 
   useEffect(() => {
+    setLoading(true);
     const summary = searchParams.get('summary') || '';
     const title = searchParams.get('title') || '4Cs Analysis Report';
+    const scoresParam = searchParams.get('scores');
+    
     setExecutiveSummary(summary);
     setProjectTitle(title);
 
-    if (summary) {
-      const fetchScores = async () => {
-        setLoading(true);
+    if (scoresParam) {
         try {
-          const result = await generateReportScores({ executiveSummary: summary });
-          setScores(result);
+            const parsedScores = JSON.parse(scoresParam);
+            setScores(parsedScores);
         } catch (error) {
-          console.error('Failed to fetch report scores:', error);
-          // Set default scores on error
-          setScores({
-            competition: { score: 0, description: "Error" },
-            consumer: { score: 0, description: "Error" },
-            culture: { score: 0, description: "Error" },
-            category: { score: 0, description: "Error" },
-          });
-        } finally {
-          setLoading(false);
+            console.error("Failed to parse scores from URL", error);
+            setScores(null);
         }
-      };
-      fetchScores();
     } else {
-        setLoading(false);
+        setScores(null);
     }
+    setLoading(false);
   }, [searchParams]);
 
   const fallbackCopy = async () => {
@@ -220,7 +211,7 @@ function ReportContent() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {loading
+        {loading || !scores
           ? Array.from({ length: 4 }).map((_, i) => (
               <Card key={i} className="flex-1 min-w-[200px] shadow-lg border-none bg-card">
                 <CardContent className="p-6 flex flex-col items-center justify-center text-center gap-2">
@@ -263,7 +254,7 @@ function ReportContent() {
           ) : executiveSummary ? (
             <div
               dangerouslySetInnerHTML={{
-                __html: executiveSummary.replace(/\n/g, '<br />'),
+                __html: executiveSummary.replace(/\\n/g, '<br />'),
               }}
             />
           ) : (

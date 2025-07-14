@@ -17,7 +17,7 @@ interface RecentProjectCardProps {
 
 export function RecentProjectCard({ project, onDeleteClick }: RecentProjectCardProps) {
   const router = useRouter();
-  const { id, title, description, industry, date, progress, status, brandName, executiveSummary } = project;
+  const { id, title, description, industry, date, progress, status, brandName, analysis } = project;
   const [isExpanded, setIsExpanded] = useState(false);
 
   const viewLink = `/project/${id}?${new URLSearchParams({
@@ -29,7 +29,8 @@ export function RecentProjectCard({ project, onDeleteClick }: RecentProjectCardP
 
   const reportLink = `/report?${new URLSearchParams({
     title: title,
-    summary: executiveSummary || ''
+    summary: analysis?.executiveSummary || '',
+    scores: JSON.stringify(analysis?.scores || {}),
   })}`
 
   const handleReportClick = () => {
@@ -93,7 +94,7 @@ export function RecentProjectCard({ project, onDeleteClick }: RecentProjectCardP
             variant="outline" 
             size="sm" 
             onClick={handleReportClick}
-            disabled={status !== 'completed'}
+            disabled={status !== 'completed' || !analysis}
           >
             <FileText className="mr-1.5 h-4 w-4" /> Report
           </Button>

@@ -16,7 +16,7 @@ import { Menu } from 'lucide-react';
 import React, { useState, useEffect, useRef } from "react";
 import { NewAnalysisDialog } from "@/components/new-analysis-dialog";
 import { useRouter } from "next/navigation";
-import type { Generate4CsAnalysisInput } from "@/ai/schemas/4cs-analysis-schema";
+import type { Generate4CsAnalysisInput, Generate4CsAnalysisOutput } from "@/ai/schemas/4cs-analysis-schema";
 import { generate4CsAnalysis } from "@/ai/flows/generate-4cs-analysis";
 import {
   AlertDialog,
@@ -62,7 +62,7 @@ export interface RecentProject extends Generate4CsAnalysisInput {
   date: string;
   progress: number;
   status: 'completed' | 'in-progress';
-  executiveSummary?: string;
+  analysis?: Generate4CsAnalysisOutput;
 }
 
 export default function DashboardPage() {
@@ -113,7 +113,7 @@ export default function DashboardPage() {
     try {
       const result = await generate4CsAnalysis(values);
       setRecentProjects(prev => prev.map(p => 
-        p.id === projectId ? { ...p, status: 'completed', progress: 100, executiveSummary: result.executiveSummary } : p
+        p.id === projectId ? { ...p, status: 'completed', progress: 100, analysis: result } : p
       ));
     } catch (error) {
       console.error("Failed to run analysis:", error);
