@@ -35,10 +35,13 @@ const prompt = ai.definePrompt({
   1.  **Perform Real-Time Web Searches:** Use your search capabilities to find the most current and accurate data for all requested metrics. Prioritize official reports, financial statements, and reputable market analysis sources.
   2.  **Generate Top-Level Metrics:** Provide key metrics for the category, including:
       -   **marketSize:** A precise, current market size value (e.g., "$12.5B"). If a real-time figure is unavailable, use the most recent available data and set 'isMarketSizeEstimated' to true.
+      -   **marketSizeChange:** The recent percentage change, if available (e.g., "+15%").
       -   **isMarketSizeEstimated:** A boolean set to true if the market size is an estimate or not from the current year, otherwise false.
       -   **growthRate:** A precise, current growth rate (e.g., "8.5%"). If a real-time figure is unavailable, use the most recent data and set 'isGrowthRateEstimated' to true.
+      -   **growthRateChange:** The recent change in growth rate, if available (e.g., "+2.1%").
       -   **isGrowthRateEstimated:** A boolean set to true if the growth rate is an estimate or not from the current year, otherwise false.
       -   **activePlayers:** The number of active players. If the exact number isn't available, provide a well-reasoned estimate and set 'isActivePlayersEstimated' to true.
+      -   **activePlayersChange:** The recent change in the number of active players, if available (e.g., "+12").
       -   **isActivePlayersEstimated:** A boolean set to true if the number of active players is an estimate, otherwise false.
       -   **marketConcentration:** The level of market concentration (e.g., "Moderate").
       -   **marketConcentrationDescription:** A one-sentence summary explaining the concentration.

@@ -226,7 +226,7 @@ const MetricCard = ({ title, value, change, icon, gradient, description, isEstim
         <p className="text-muted-foreground text-sm">{title}</p>
         {change && <p className={`text-sm font-medium mt-1 ${change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>{change}</p>}
         {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
-        {isEstimated && <p className="text-xs text-muted-foreground mt-1">Estimated</p>}
+        {isEstimated && <p className="text-xs text-muted-foreground mt-1">(Estimated)</p>}
       </CardContent>
     </Card>
   );
