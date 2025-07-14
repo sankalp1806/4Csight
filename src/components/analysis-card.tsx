@@ -10,11 +10,15 @@ interface AnalysisCardProps {
   icon: React.ReactNode;
   color: string;
   href?: string;
+  gradient?: string;
 }
 
-export function AnalysisCard({ title, description, icon, color, href }: AnalysisCardProps) {
+export function AnalysisCard({ title, description, icon, color, href, gradient }: AnalysisCardProps) {
   const cardContent = (
-    <Card className="h-full hover:shadow-lg transition-shadow duration-300">
+    <Card className={cn(
+      "h-full hover:shadow-lg transition-shadow duration-300 border-none",
+      gradient && `bg-gradient-to-br ${gradient}`
+    )}>
       <CardHeader className="p-4">
         <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center text-white", color)}>
           {icon}
