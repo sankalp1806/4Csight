@@ -10,15 +10,20 @@ import {
   Download,
   FileText,
   ArrowLeft,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSearchParams } from 'next/navigation';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState, useRef } from 'react';
 import { generateReportScores } from '@/ai/flows/generate-report-scores';
 import type { GenerateReportScoresOutput } from '@/ai/schemas/report-scores-schema';
 import Link from 'next/link';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { useToast } from '@/hooks/use-toast';
+
 
 interface ScoreCardProps {
   icon: React.ReactNode;
@@ -49,10 +54,14 @@ function ScoreCard({
 
 function ReportContent() {
   const searchParams = useSearchParams();
+  const { toast } = useToast();
   const [scores, setScores] = useState<GenerateReportScoresOutput | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
   const [executiveSummary, setExecutiveSummary] = useState('');
   const [projectTitle, setProjectTitle] = useState('');
+  const reportRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     const summary = searchParams.get('summary') || '';
@@ -85,6 +94,64 @@ function ReportContent() {
     }
   }, [searchParams]);
 
+  const handleShare = async () => {
+    const shareData = {
+      title: projectTitle,
+      text: `Check out the 4Cs Analysis Report for ${projectTitle}`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Link Copied",
+          description: "Report link has been copied to your clipboard.",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to share:", error);
+      toast({
+        title: "Error",
+        description: "Could not share the report.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleExportPdf = async () => {
+    const reportElement = reportRef.current;
+    if (!reportElement) return;
+
+    setIsExporting(true);
+    try {
+      const canvas = await html2canvas(reportElement, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null,
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height],
+      });
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save(`${projectTitle.replace(/\s/g, '_')}.pdf`);
+    } catch (error) {
+      console.error("Failed to export PDF:", error);
+      toast({
+        title: "Error",
+        description: "Failed to export the report as PDF.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+
   const scoreData = [
     {
       icon: <BarChart className="w-8 h-8" />,
@@ -113,7 +180,7 @@ function ReportContent() {
   ];
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
+    <div ref={reportRef} className="w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8 bg-background">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
         <div>
            <Link href="/">
@@ -128,11 +195,16 @@ function ReportContent() {
           </p>
         </div>
         <div className="flex items-center gap-2 mt-4 sm:mt-0">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleShare}>
             <Share className="mr-2 h-4 w-4" /> Share
           </Button>
-          <Button>
-            <Download className="mr-2 h-4 w-4" /> Export PDF
+          <Button onClick={handleExportPdf} disabled={isExporting}>
+            {isExporting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="mr-2 h-4 w-4" />
+            )}
+            {isExporting ? "Exporting..." : "Export PDF"}
           </Button>
         </div>
       </div>
