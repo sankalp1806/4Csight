@@ -29,8 +29,7 @@ export function RecentProjectCard({ project, onDeleteClick }: RecentProjectCardP
 
   const reportLink = `/report?${new URLSearchParams({
     title: title,
-    summary: analysis?.executiveSummary || '',
-    scores: JSON.stringify(analysis?.scores || {}),
+    analysis: JSON.stringify(analysis || {}),
   })}`
 
   const handleReportClick = () => {

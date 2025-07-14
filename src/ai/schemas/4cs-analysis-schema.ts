@@ -5,6 +5,7 @@
  * - Generate4CsAnalysisInputSchema, Generate4CsAnalysisInput
  * - CompetitorSchema, Competitor
  * - ScoreSchema, Score
+ * - ExecutiveSummarySchema, ExecutiveSummary
  * - Generate4CsAnalysisOutputSchema, Generate4CsAnalysisOutput
  */
 
@@ -33,13 +34,28 @@ const ScoreSchema = z.object({
 });
 export type Score = z.infer<typeof ScoreSchema>;
 
+export const ExecutiveSummarySchema = z.object({
+    keyFindings: z.object({
+        marketOpportunities: z.string().describe("Clearly articulated growth opportunities based on the analysis. Provide in a single paragraph."),
+        competitivePositions: z.string().describe("Assessment of the brand's position relative to competitors. Provide in a single paragraph."),
+        culturalAlignment: z.string().describe("Evaluation of brand-culture fit and opportunities. Provide in a single paragraph."),
+        targetMarket: z.string().describe("Refined understanding of priority customer segments. Provide in a single paragraph."),
+    }).describe("A section for key findings from the 4Cs analysis."),
+    strategicRecommendations: z.object({
+        highPriority: z.array(z.string()).describe("A list of 2-3 critical initiatives requiring immediate attention and resources. These should be high-impact actions or quick wins."),
+        mediumPriority: z.array(z.string()).describe("A list of 2-3 important initiatives for medium-term growth that require planning."),
+        lowPriority: z.array(z.string()).describe("A list of 1-2 long-term strategic initiatives or nice-to-have improvements with uncertain returns."),
+    }).describe("A framework of strategic recommendations prioritized into high, medium, and low categories.")
+});
+export type ExecutiveSummary = z.infer<typeof ExecutiveSummarySchema>;
+
 
 export const Generate4CsAnalysisOutputSchema = z.object({
   competition: z.array(CompetitorSchema).describe('A list of competitors with their analysis.'),
   culture: z.string().describe('Analysis of relevant cultural trends and alignment.'),
   consumer: z.string().describe('Analysis of the target consumer segments.'),
   category: z.string().describe('Analysis of the product or service category.'),
-  executiveSummary: z.string().describe('Executive summary with prioritized action items.'),
+  executiveSummary: ExecutiveSummarySchema.describe('A structured executive summary with key findings and prioritized strategic recommendations.'),
   scores: z.object({
       competition: ScoreSchema,
       consumer: ScoreSchema,

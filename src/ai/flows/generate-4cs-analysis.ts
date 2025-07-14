@@ -33,7 +33,16 @@ const prompt = ai.definePrompt({
       -   **Culture:** Examine prevailing cultural trends, societal values, and lifestyle shifts that could impact the brand. Use web search to identify recent and relevant cultural movements.
       -   **Consumer:** Understand the target audience segments, their needs, motivations, online behavior, and perceptions. Use web search to find recent consumer studies or articles.
       -   **Category:** Define and analyze the product or service category, including market size, growth trends, and key drivers of demand. Use web search for the latest market data and reports.
-  4.  **Create Executive Summary:** After the analysis, create a concise **Executive Summary** with prioritized action items (High, Medium, and Low priority). These actions should be strategic recommendations derived directly from the 4Cs analysis.
+  4.  **Create Structured Executive Summary:** Based on the full analysis, create a structured **Executive Summary**.
+      -   **Key Findings:**
+          -   **Market Opportunities:** Clearly articulate growth opportunities based on the analysis in a single paragraph.
+          -   **Competitive Positions:** Assess the brand's position relative to competitors in a single paragraph.
+          -   **Cultural Alignment:** Evaluate brand-culture fit and opportunities in a single paragraph.
+          -   **Target Market:** Provide a refined understanding of priority customer segments in a single paragraph.
+      -   **Strategic Recommendations:**
+          -   **High Priority:** List 2-3 critical initiatives requiring immediate attention (high impact or quick wins).
+          -   **Medium Priority:** List 2-3 important initiatives for medium-term growth.
+          -   **Low Priority:** List 1-2 long-term strategic initiatives or improvements with uncertain returns.
   5.  **Generate Scores:** Based on the full analysis, generate a score (out of 10) and a brief, two-word descriptive summary for each of the four categories: Competition, Consumer, Culture, and Category. The score should reflect the brand's strength or opportunity in that area. A higher score indicates a stronger position or more favorable conditions.
 
   Return the result in the required JSON format.

@@ -11,17 +11,22 @@ import {
   FileText,
   ArrowLeft,
   Loader2,
+  Lightbulb,
+  Award,
+  CircleDot,
+  Mountain,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense, useEffect, useState, useRef } from 'react';
-import type { GenerateReportScoresOutput } from '@/ai/schemas/report-scores-schema';
+import type { Generate4CsAnalysisOutput } from '@/ai/schemas/4cs-analysis-schema';
 import Link from 'next/link';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 
 interface ScoreCardProps {
@@ -54,33 +59,30 @@ function ScoreCard({
 function ReportContent() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [scores, setScores] = useState<GenerateReportScoresOutput | null>(null);
+  const [analysis, setAnalysis] = useState<Generate4CsAnalysisOutput | null>(null);
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
-  const [executiveSummary, setExecutiveSummary] = useState('');
   const [projectTitle, setProjectTitle] = useState('');
   const reportRef = useRef<HTMLDivElement>(null);
 
 
   useEffect(() => {
     setLoading(true);
-    const summary = searchParams.get('summary') || '';
     const title = searchParams.get('title') || '4Cs Analysis Report';
-    const scoresParam = searchParams.get('scores');
+    const analysisParam = searchParams.get('analysis');
     
-    setExecutiveSummary(summary);
     setProjectTitle(title);
 
-    if (scoresParam) {
+    if (analysisParam) {
         try {
-            const parsedScores = JSON.parse(scoresParam);
-            setScores(parsedScores);
+            const parsedAnalysis = JSON.parse(analysisParam);
+            setAnalysis(parsedAnalysis);
         } catch (error) {
-            console.error("Failed to parse scores from URL", error);
-            setScores(null);
+            console.error("Failed to parse analysis from URL", error);
+            setAnalysis(null);
         }
     } else {
-        setScores(null);
+        setAnalysis(null);
     }
     setLoading(false);
   }, [searchParams]);
@@ -115,8 +117,6 @@ function ReportContent() {
         await fallbackCopy();
       }
     } catch (error) {
-      // This can happen if the user dismisses the share sheet or if there's another issue.
-      // We can safely ignore this error or log it if needed.
       console.log("Share action was cancelled or failed:", error);
     }
   };
@@ -157,28 +157,37 @@ function ReportContent() {
     {
       icon: <BarChart className="w-8 h-8" />,
       title: 'Competition',
-      data: scores?.competition,
+      data: analysis?.scores?.competition,
       color: 'text-green-500',
     },
     {
       icon: <Users className="w-8 h-8" />,
       title: 'Consumer',
-      data: scores?.consumer,
+      data: analysis?.scores?.consumer,
       color: 'text-green-500',
     },
     {
       icon: <TrendingUp className="w-8 h-8" />,
       title: 'Culture',
-      data: scores?.culture,
+      data: analysis?.scores?.culture,
       color: 'text-green-500',
     },
     {
       icon: <Archive className="w-8 h-8" />,
       title: 'Category',
-      data: scores?.category,
+      data: analysis?.scores?.category,
       color: 'text-green-500',
     },
   ];
+
+  const keyFindings = analysis?.executiveSummary?.keyFindings ? [
+      { title: "Market Opportunities", content: analysis.executiveSummary.keyFindings.marketOpportunities, icon: <Mountain className="w-5 h-5 text-primary"/> },
+      { title: "Competitive Positions", content: analysis.executiveSummary.keyFindings.competitivePositions, icon: <Award className="w-5 h-5 text-primary"/> },
+      { title: "Cultural Alignment", content: analysis.executiveSummary.keyFindings.culturalAlignment, icon: <TrendingUp className="w-5 h-5 text-primary"/> },
+      { title: "Target Market", content: analysis.executiveSummary.keyFindings.targetMarket, icon: <CircleDot className="w-5 h-5 text-primary"/> },
+  ] : [];
+
+  const recommendations = analysis?.executiveSummary?.strategicRecommendations;
 
   return (
     <div ref={reportRef} className="w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8 bg-background">
@@ -211,7 +220,7 @@ function ReportContent() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {loading || !scores
+        {loading || !analysis
           ? Array.from({ length: 4 }).map((_, i) => (
               <Card key={i} className="flex-1 min-w-[200px] shadow-lg border-none bg-card">
                 <CardContent className="p-6 flex flex-col items-center justify-center text-center gap-2">
@@ -241,26 +250,73 @@ function ReportContent() {
             Executive Summary
           </h2>
         </div>
-        <p className="text-muted-foreground mb-4">
-          AI-generated strategic insights and recommendations
-        </p>
-        <div className="prose prose-sm dark:prose-invert max-w-none text-foreground/90">
-          {loading ? (
-             <div className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-11/12" />
+        
+        {loading || !analysis ? (
+             <div className="space-y-6">
+                <Skeleton className="h-6 w-1/3 mb-4" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-6 w-1/3 mt-6 mb-4" />
+                <Skeleton className="h-32 w-full" />
              </div>
-          ) : executiveSummary ? (
-            <div
-              dangerouslySetInnerHTML={{
-                __html: executiveSummary.replace(/\\n/g, '<br />'),
-              }}
-            />
-          ) : (
-            <p>No executive summary available for this project.</p>
-          )}
-        </div>
+        ) : analysis?.executiveSummary ? (
+            <div className="space-y-10">
+                {/* Key Findings */}
+                <div>
+                    <h3 className="text-xl font-semibold text-foreground mb-4">Key Findings</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {keyFindings.map((finding, index) => (
+                            <div key={index} className="flex items-start gap-4">
+                                <div className="p-2 bg-primary/10 rounded-full mt-1">
+                                    {finding.icon}
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-foreground">{finding.title}</h4>
+                                    <p className="text-sm text-muted-foreground">{finding.content}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Strategic Recommendations */}
+                <div>
+                    <h3 className="text-xl font-semibold text-foreground mb-4">Strategic Recommendations Framework</h3>
+                    <div className="space-y-6">
+                        {recommendations && (
+                        <>
+                            <div className="p-4 rounded-lg bg-red-50 border border-red-200">
+                                <h4 className="font-semibold flex items-center gap-2 mb-2">
+                                <Badge className="bg-red-500 text-white">High</Badge> High Priority Actions
+                                </h4>
+                                <ul className="list-disc list-inside space-y-1 text-sm text-red-900">
+                                {recommendations.highPriority.map((item, i) => <li key={i}>{item}</li>)}
+                                </ul>
+                            </div>
+                            <div className="p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+                                <h4 className="font-semibold flex items-center gap-2 mb-2">
+                                <Badge className="bg-yellow-500 text-white">Medium</Badge> Medium Priority Actions
+                                </h4>
+                                <ul className="list-disc list-inside space-y-1 text-sm text-yellow-900">
+                                {recommendations.mediumPriority.map((item, i) => <li key={i}>{item}</li>)}
+                                </ul>
+                            </div>
+                            <div className="p-4 rounded-lg bg-green-50 border border-green-200">
+                                <h4 className="font-semibold flex items-center gap-2 mb-2">
+                                <Badge className="bg-green-500 text-white">Low</Badge> Low Priority Actions
+                                </h4>
+                                <ul className="list-disc list-inside space-y-1 text-sm text-green-900">
+                                {recommendations.lowPriority.map((item, i) => <li key={i}>{item}</li>)}
+                                </ul>
+                            </div>
+                        </>
+                        )}
+                    </div>
+                </div>
+            </div>
+        ) : (
+            <p className="text-muted-foreground">No executive summary available for this project.</p>
+        )}
+
       </div>
     </div>
   );
