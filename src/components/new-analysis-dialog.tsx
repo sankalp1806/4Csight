@@ -32,6 +32,7 @@ const formSchema = z.object({
   description: z.string().min(1, { message: 'Description is required.' }),
   industry: z.string().min(1, { message: 'Industry is required.' }),
   otherIndustry: z.string().optional(),
+  location: z.string().optional(),
 }).refine(data => {
     if (data.industry === 'Other') {
         return !!data.otherIndustry && data.otherIndustry.trim().length > 0;
@@ -65,6 +66,7 @@ export function NewAnalysisDialog({ open, onOpenChange, onSubmit }: NewAnalysisD
       description: '',
       industry: '',
       otherIndustry: '',
+      location: '',
     },
   });
 
@@ -79,6 +81,7 @@ export function NewAnalysisDialog({ open, onOpenChange, onSubmit }: NewAnalysisD
         brandName: values.brandName,
         description: values.description,
         industry: values.industry === 'Other' ? values.otherIndustry || '' : values.industry,
+        location: values.location,
     };
     await onSubmit(submissionValues);
     setIsSubmitting(false);
@@ -178,6 +181,17 @@ export function NewAnalysisDialog({ open, onOpenChange, onSubmit }: NewAnalysisD
                     )}
                  </div>
             )}
+
+            <div className="space-y-2">
+              <Label htmlFor="location">Location (Optional)</Label>
+              <Controller
+                name="location"
+                control={control}
+                render={({ field }) => (
+                  <Input id="location" {...field} placeholder="e.g., USA, London" />
+                )}
+              />
+            </div>
 
             <Alert className="bg-muted/50">
                 <Terminal className="h-4 w-4" />

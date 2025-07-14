@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, ChevronDown, ChevronUp, Eye, FileText, Tag, Trash2 } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronUp, Eye, FileText, Globe, Tag, Trash2 } from 'lucide-react';
 import type { RecentProject } from '@/app/page';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -17,15 +17,20 @@ interface RecentProjectCardProps {
 
 export function RecentProjectCard({ project, onDeleteClick }: RecentProjectCardProps) {
   const router = useRouter();
-  const { id, title, description, industry, date, progress, status, brandName, analysis } = project;
+  const { id, title, description, industry, date, progress, status, brandName, analysis, location } = project;
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const viewLink = `/project/${id}?${new URLSearchParams({
+  const params = new URLSearchParams({
     title,
     brandName,
-    description,
+    description: description || '',
     industry,
-  }).toString()}`;
+  });
+  if (location) {
+    params.set('location', location);
+  }
+
+  const viewLink = `/project/${id}?${params.toString()}`;
 
   const reportLink = `/report?${new URLSearchParams({
     title: title,
@@ -57,9 +62,17 @@ export function RecentProjectCard({ project, onDeleteClick }: RecentProjectCardP
                     )}
                 </>
             )}
-            <div className="flex items-center text-xs sm:text-sm text-muted-foreground gap-2 mt-3">
-              <Tag className="h-4 w-4" />
-              <span>{industry}</span>
+            <div className="flex flex-wrap items-center text-xs sm:text-sm text-muted-foreground gap-x-4 gap-y-2 mt-3">
+              <div className="flex items-center gap-2">
+                <Tag className="h-4 w-4" />
+                <span>{industry}</span>
+              </div>
+              {location && (
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  <span>{location}</span>
+                </div>
+              )}
             </div>
           </div>
           <div className="flex flex-row sm:flex-col items-center sm:items-end shrink-0 gap-2">

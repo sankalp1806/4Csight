@@ -43,6 +43,7 @@ export default function ProjectPage() {
   const brandName = searchParams.get('brandName');
   const description = searchParams.get('description');
   const industry = searchParams.get('industry');
+  const location = searchParams.get('location');
   const title = searchParams.get('title');
 
   const createAnalysisLink = (baseHref: string) => {
@@ -50,6 +51,7 @@ export default function ProjectPage() {
     if (brandName) params.set('brandName', brandName);
     if (description) params.set('description', description);
     if (industry) params.set('industry', industry);
+    if (location) params.set('location', location);
     return `${baseHref}?${params.toString()}`;
   };
 

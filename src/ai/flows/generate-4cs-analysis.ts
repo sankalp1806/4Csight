@@ -24,15 +24,18 @@ const prompt = ai.definePrompt({
   Brand to Analyze: {{{brandName}}}
   Business Description: {{{description}}}
   Industry: {{{industry}}}
+  {{#if location}}
+  Geographic Location for Analysis: {{{location}}}
+  {{/if}}
 
   Instructions:
-  1.  **Perform Web Searches:** Use your search capabilities to find up-to-date information about the brand, its competitors, the specified industry, cultural trends, and consumer behavior.
+  1.  **Perform Web Searches:** Use your search capabilities to find up-to-date information about the brand, its competitors, the specified industry, cultural trends, and consumer behavior. {{#if location}}Focus the search on the '{{{location}}}' region where applicable.{{/if}}
   2.  **Synthesize Information:** Combine the information from your web searches with the user-provided description and industry.
   3.  **Generate 4Cs Analysis:** Provide a comprehensive analysis covering the following four areas:
-      -   **Competition:** Analyze the competitive landscape. You must identify **between 8 and 10 direct competitors**, **at least 4-5 indirect competitors**, and **at least 3 substitute competitors**. For each competitor, provide their name, type, estimated market share, a competitive rating (1-5), and a list of their key strengths and weaknesses. Use web search extensively to identify key competitors and gather this information.
-      -   **Culture:** Examine prevailing cultural trends, societal values, and lifestyle shifts that could impact the brand. Use web search to identify recent and relevant cultural movements.
-      -   **Consumer:** Understand the target audience segments, their needs, motivations, online behavior, and perceptions. Use web search to find recent consumer studies or articles.
-      -   **Category:** Define and analyze the product or service category, including market size, growth trends, and key drivers of demand. Use web search for the latest market data and reports.
+      -   **Competition:** Analyze the competitive landscape. You must identify **between 8 and 10 direct competitors**, **at least 4-5 indirect competitors**, and **at least 3 substitute competitors**. For each competitor, provide their name, type, estimated market share, a competitive rating (1-5), and a list of their key strengths and weaknesses. Use web search extensively to identify key competitors and gather this information. {{#if location}}Tailor the competitor list to the '{{{location}}}' market.{{/if}}
+      -   **Culture:** Examine prevailing cultural trends, societal values, and lifestyle shifts that could impact the brand. {{#if location}}Focus on trends relevant to '{{{location}}}'.{{/if}}
+      -   **Consumer:** Understand the target audience segments, their needs, motivations, online behavior, and perceptions. {{#if location}}Analyze consumers within '{{{location}}}'.{{/if}}
+      -   **Category:** Define and analyze the product or service category, including market size, growth trends, and key drivers of demand. {{#if location}}Provide data specific to the '{{{location}}}' market.{{/if}}
   4.  **Create Structured Executive Summary:** Based on the full analysis, create a structured **Executive Summary**.
       -   **Key Findings:**
           -   **Market Opportunities:** Clearly articulate growth opportunities based on the analysis in a single paragraph.

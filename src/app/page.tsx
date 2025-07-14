@@ -100,9 +100,7 @@ export default function DashboardPage() {
     const newProject: RecentProject = {
       id: projectId,
       title: `${values.brandName} 4Cs Analysis`,
-      description: values.description,
-      industry: values.industry,
-      brandName: values.brandName,
+      ...values,
       date: new Date().toLocaleDateString(),
       progress: 10,
       status: 'in-progress',
