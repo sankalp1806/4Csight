@@ -298,8 +298,8 @@ const CategoryHealthCard = ({ health }: { health: GenerateCategoryAnalysisOutput
         </CardHeader>
         <CardContent>
             <div className="text-center mb-4">
-                <p className="text-3xl font-bold text-green-500">{health.overallAssessment}</p>
-                <p className="text-base text-muted-foreground">Overall Assessment</p>
+                <p className="text-sm text-muted-foreground">{health.overallAssessment}</p>
+                <p className="text-xs text-muted-foreground mt-1">Overall Assessment</p>
             </div>
             <div className="space-y-2 text-sm">
                 <div className="flex justify-between">

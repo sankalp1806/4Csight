@@ -36,7 +36,7 @@ export const MarketSegmentSchema = z.object({
 export type MarketSegment = z.infer<typeof MarketSegmentSchema>;
 
 export const CategoryHealthSchema = z.object({
-    overallAssessment: z.string().describe('The overall assessment of the category\'s health, e.g., "Healthy".'),
+    overallAssessment: z.string().describe('A one or two sentence summary of the category\'s health.'),
     growthPotential: z.enum(['High', 'Moderate', 'Low']).describe('The growth potential of the category.'),
     competitionLevel: z.enum(['High', 'Moderate', 'Low']).describe('The level of competition in the category.'),
     barriersToEntry: z.enum(['High', 'Moderate', 'Low']).describe('The barriers to entry for new competitors.'),
