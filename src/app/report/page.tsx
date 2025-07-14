@@ -11,10 +11,9 @@ import {
   FileText,
   ArrowLeft,
   Loader2,
-  Lightbulb,
+  Mountain,
   Award,
   CircleDot,
-  Mountain,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,7 +26,6 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-
 
 interface ScoreCardProps {
   icon: React.ReactNode;
@@ -65,7 +63,6 @@ function ReportContent() {
   const [projectTitle, setProjectTitle] = useState('');
   const reportRef = useRef<HTMLDivElement>(null);
 
-
   useEffect(() => {
     setLoading(true);
     const title = searchParams.get('title') || '4Cs Analysis Report';
@@ -86,7 +83,7 @@ function ReportContent() {
     }
     setLoading(false);
   }, [searchParams]);
-
+  
   const fallbackCopy = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -117,7 +114,13 @@ function ReportContent() {
         await fallbackCopy();
       }
     } catch (error) {
-      console.log("Share action was cancelled or failed:", error);
+        // Log error but do nothing if user cancels share dialog
+        if (error instanceof Error && error.name === 'AbortError') {
+             console.log("Share action was cancelled by the user.");
+        } else {
+            console.error("Share failed:", error);
+            await fallbackCopy();
+        }
     }
   };
 
@@ -151,7 +154,6 @@ function ReportContent() {
       setIsExporting(false);
     }
   };
-
 
   const scoreData = [
     {
@@ -321,7 +323,6 @@ function ReportContent() {
     </div>
   );
 }
-
 
 export default function ReportPage() {
   return (

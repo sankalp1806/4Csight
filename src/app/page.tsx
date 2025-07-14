@@ -61,8 +61,9 @@ export interface RecentProject extends Generate4CsAnalysisInput {
   title: string;
   date: string;
   progress: number;
-  status: 'completed' | 'in-progress';
+  status: 'completed' | 'in-progress' | 'failed';
   analysis?: Generate4CsAnalysisOutput;
+  failureReason?: string;
 }
 
 export default function DashboardPage() {
@@ -115,8 +116,9 @@ export default function DashboardPage() {
       ));
     } catch (error) {
       console.error("Failed to run analysis:", error);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
       setRecentProjects(prev => prev.map(p => 
-        p.id === projectId ? { ...p, status: 'in-progress', description: `Failed to analyze: ${p.description}` } : p
+        p.id === projectId ? { ...p, status: 'failed', failureReason: errorMessage } : p
       ));
     }
   };
