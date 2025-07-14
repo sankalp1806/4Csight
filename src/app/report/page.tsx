@@ -94,6 +94,23 @@ function ReportContent() {
     }
   }, [searchParams]);
 
+  const fallbackCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Link Copied",
+        description: "Report link has been copied to your clipboard.",
+      });
+    } catch (err) {
+      console.error("Fallback copy failed:", err);
+      toast({
+        title: "Error",
+        description: "Could not share or copy the report link.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleShare = async () => {
     const shareData = {
       title: projectTitle,
@@ -104,19 +121,12 @@ function ReportContent() {
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast({
-          title: "Link Copied",
-          description: "Report link has been copied to your clipboard.",
-        });
+        await fallbackCopy();
       }
     } catch (error) {
-      console.error("Failed to share:", error);
-      toast({
-        title: "Error",
-        description: "Could not share the report.",
-        variant: "destructive",
-      });
+      // This can happen if the user dismisses the share sheet or if there's a permission issue.
+      console.error("Failed to share, falling back to copy:", error);
+      await fallbackCopy();
     }
   };
 
