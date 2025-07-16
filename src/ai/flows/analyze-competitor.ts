@@ -46,7 +46,7 @@ const prompt = ai.definePrompt({
   3.  **Populate the analysis:** Provide the following details:
       -   **name:** The official name of the competitor.
       -   **type:** The competitor type provided by the user ('{{{competitorType}}}').
-      -   **marketShare:** Estimate the competitor's market share as a percentage. If a precise number is not available, provide a reasonable estimate based on public data, news, and company size.
+      -   **marketShare:** Estimate the competitor's market share as a percentage. If a precise number is not available, provide a reasonable estimate based on public data, news, and company size accroding to the location specifically provided by the user, but if location is not provided by the user then provide the global data.
       -   **rating:** Provide a competitive rating from 1 to 5, where 5 is a very strong competitor.
       -   **strengths:** List at least 3-4 key strengths of the competitor.
       -   **weaknesses:** List at least 3-4 key weaknesses of the competitor.

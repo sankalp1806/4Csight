@@ -21,7 +21,7 @@ export function QuickStats({ projects }: QuickStatsProps) {
             <CardTitle className="text-lg sm:text-xl font-semibold">Quick Stats</CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="p-4 sm:p-6 pt-0 grid grid-cols-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 gap-4">
+      <CardContent className="p-4 sm:p-6 pt-0 grid grid-cols-3 lg:grid-cols-1 gap-4">
         <div className="text-center">
           <p className="text-3xl sm:text-4xl font-bold text-primary">{totalProjects}</p>
           <p className="text-xs sm:text-sm text-muted-foreground">Total Projects</p>
