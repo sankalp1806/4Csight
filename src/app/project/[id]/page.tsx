@@ -17,7 +17,7 @@ const analysisTypes = [
       </div>
     ),
     href: '/competitive-analysis',
-    gradient: 'from-blue-50 to-blue-100/10'
+    gradient: 'from-blue-50 to-blue-100/10 dark:from-blue-900/40 dark:to-blue-950/10'
   },
   {
     title: 'Consumer Analysis',
@@ -28,7 +28,7 @@ const analysisTypes = [
       </div>
     ),
     href: '/consumer-analysis',
-    gradient: 'from-green-50 to-green-100/10'
+    gradient: 'from-green-50 to-green-100/10 dark:from-green-900/40 dark:to-green-950/10'
   },
   {
     title: 'Cultural Analysis',
@@ -39,7 +39,7 @@ const analysisTypes = [
       </div>
     ),
     href: '/cultural-analysis',
-    gradient: 'from-purple-50 to-purple-100/10'
+    gradient: 'from-purple-50 to-purple-100/10 dark:from-purple-900/40 dark:to-purple-950/10'
   },
   {
     title: 'Category Analysis',
@@ -50,7 +50,7 @@ const analysisTypes = [
       </div>
     ),
     href: '/category-analysis',
-    gradient: 'from-yellow-50 to-yellow-100/10'
+    gradient: 'from-yellow-50 to-yellow-100/10 dark:from-yellow-900/40 dark:to-yellow-950/10'
   }
 ];
 
@@ -94,3 +94,5 @@ export default function ProjectPage() {
     </div>
   );
 }
+
+    
