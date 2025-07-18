@@ -28,6 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const analysisTypes = [
   {
@@ -178,10 +179,13 @@ export default function DashboardPage() {
               </p>
             </div>
           </div>
-          <Button className="hidden sm:flex bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" onClick={() => setIsNewAnalysisDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            New Analysis Project
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button className="hidden sm:flex bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" onClick={() => setIsNewAnalysisDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              New Analysis Project
+            </Button>
+          </div>
         </header>
 
         <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
