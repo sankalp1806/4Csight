@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: '4Cs Analysis Dashboard',
+  title: '4Csight',
   description: 'Comprehensive strategic analysis tool for your business',
 };
 
