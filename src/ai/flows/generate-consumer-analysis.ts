@@ -29,12 +29,15 @@ const prompt = ai.definePrompt({
   Brand to Analyze: {{{brandName}}}
   Business Description: {{{description}}}
   Industry: {{{industry}}}
+  {{#if location}}
+  Geographic Location for Analysis: {{{location}}}
+  {{/if}}
 
   Instructions:
-  1.  **Perform Web Searches:** Use your search capabilities to find up-to-date information about consumer demographics, psychographics, behavioral patterns, and customer journeys relevant to the specified industry and business.
+  1.  **Perform Web Searches:** Use your search capabilities to find up-to-date information about consumer demographics, psychographics, behavioral patterns, and customer journeys relevant to the specified industry and business. {{#if location}}Focus the search on the '{{{location}}}' region where applicable.{{/if}}
   2.  **Generate Top-Level Metrics:** Provide a score (0-100) for the estimated completeness or confidence in the analysis for each of the following areas: Demographics, Psychographics, Behavioral Patterns, and Customer Journey.
   3.  **Identify and Detail Customer Segments:**
-      - Identify 2-3 distinct customer segments.
+      - Identify 2-3 distinct customer segments. {{#if location}}Analyze consumers within '{{{location}}}'.{{/if}}
       - For each segment, provide:
           - A descriptive name and a short description.
           - The estimated market size as a percentage.

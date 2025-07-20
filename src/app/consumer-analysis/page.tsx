@@ -77,6 +77,7 @@ function ConsumerAnalysisContent() {
   const brandName = searchParams.get('brandName') || '';
   const industry = searchParams.get('industry') || '';
   const description = searchParams.get('description') || '';
+  const location = searchParams.get('location') || undefined;
 
   useEffect(() => {
     if (brandName && description && industry) {
@@ -87,6 +88,7 @@ function ConsumerAnalysisContent() {
             brandName,
             description,
             industry,
+            location,
           });
           setAnalysis(result);
         } catch (error) {
@@ -104,7 +106,7 @@ function ConsumerAnalysisContent() {
     } else {
       setLoading(false);
     }
-  }, [searchParams, toast, brandName, description, industry]);
+  }, [searchParams, toast, brandName, description, industry, location]);
 
   const handleAnalysisClick = async (type: NonNullable<AnalysisType>, segment?: CustomerSegment) => {
     setSelectedSegment(segment || null);

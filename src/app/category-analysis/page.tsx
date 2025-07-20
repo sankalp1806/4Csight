@@ -47,13 +47,14 @@ function CategoryAnalysisContent() {
   const brandName = searchParams.get('brandName') || '';
   const industry = searchParams.get('industry') || '';
   const description = searchParams.get('description') || '';
+  const location = searchParams.get('location') || undefined;
 
   useEffect(() => {
     if (brandName && description && industry) {
       const fetchAnalysis = async () => {
         setLoading(true);
         try {
-          const result = await generateCategoryAnalysis({ brandName, description, industry });
+          const result = await generateCategoryAnalysis({ brandName, description, industry, location });
           setAnalysis(result);
         } catch (error) {
           console.error('Failed to fetch category analysis:', error);
@@ -70,7 +71,7 @@ function CategoryAnalysisContent() {
     } else {
       setLoading(false);
     }
-  }, [searchParams, toast, brandName, description, industry]);
+  }, [searchParams, toast, brandName, description, industry, location]);
 
   if (loading) {
     return <AnalysisSkeleton />;

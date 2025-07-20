@@ -80,6 +80,7 @@ function CompetitiveAnalysisContent() {
   useEffect(() => {
     const description = searchParams.get('description');
     const industry = searchParams.get('industry');
+    const location = searchParams.get('location') || undefined;
 
     if (brandName && description && industry) {
       const fetchAnalysis = async () => {
@@ -89,6 +90,7 @@ function CompetitiveAnalysisContent() {
             brandName,
             description,
             industry,
+            location,
           });
           setCompetitors(result.competition);
         } catch (error) {

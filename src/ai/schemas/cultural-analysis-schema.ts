@@ -8,6 +8,7 @@ export const GenerateCulturalAnalysisInputSchema = z.object({
   brandName: z.string().describe('The name of the brand or business to analyze.'),
   description: z.string().describe('A description of the project, business model, and objectives.'),
   industry: z.string().describe('The industry the business operates in.'),
+  location: z.string().optional().describe('The geographical location (e.g., country or city) to focus the analysis on.'),
 });
 export type GenerateCulturalAnalysisInput = z.infer<typeof GenerateCulturalAnalysisInputSchema>;
 

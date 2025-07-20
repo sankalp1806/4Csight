@@ -30,9 +30,12 @@ const prompt = ai.definePrompt({
   Brand to Analyze: {{{brandName}}}
   Business Description: {{{description}}}
   Industry: {{{industry}}}
+  {{#if location}}
+  Geographic Location for Analysis: {{{location}}}
+  {{/if}}
 
   Instructions:
-  1.  **Perform Real-Time Web Searches:** Use your search capabilities to find the most current and accurate data for all requested metrics. Prioritize official reports, financial statements, and reputable market analysis sources.
+  1.  **Perform Real-Time Web Searches:** Use your search capabilities to find the most current and accurate data for all requested metrics. Prioritize official reports, financial statements, and reputable market analysis sources. {{#if location}}Focus the search on the '{{{location}}}' region where applicable.{{/if}}
   2.  **Generate Top-Level Metrics:** Provide key metrics for the category, including:
       -   **marketSize:** A precise, current market size value (e.g., "$12.5B"). If a real-time figure is unavailable, use the most recent available data and set 'isMarketSizeEstimated' to true.
       -   **marketSizeChange:** The recent percentage change, if available (e.g., "+15%").
@@ -46,7 +49,7 @@ const prompt = ai.definePrompt({
       -   **marketConcentration:** The level of market concentration (e.g., "Moderate").
       -   **marketConcentrationDescription:** A one-sentence summary explaining the concentration.
   3.  **Identify and Detail Market Segments:**
-      - Identify 4-5 key market segments.
+      - Identify 4-5 key market segments. {{#if location}}Provide data specific to the '{{{location}}}' market.{{/if}}
       - For each, provide a name, revenue, growth rate, market share, and trend.
   4.  **Assess Category Health:**
       - Provide an overall assessment and rate potential, competition, and barriers to entry.

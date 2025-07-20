@@ -48,10 +48,10 @@ function CulturalAnalysisContent() {
 
   const brandName = searchParams.get('brandName') || '';
   const industry = searchParams.get('industry') || '';
+  const description = searchParams.get('description') || '';
+  const location = searchParams.get('location') || undefined;
 
   useEffect(() => {
-    const description = searchParams.get('description');
-    
     if (brandName && description && industry) {
       const fetchAnalysis = async () => {
         setLoading(true);
@@ -60,6 +60,7 @@ function CulturalAnalysisContent() {
             brandName,
             description,
             industry,
+            location,
           });
           setAnalysis(result);
         } catch (error) {
@@ -77,7 +78,7 @@ function CulturalAnalysisContent() {
     } else {
       setLoading(false);
     }
-  }, [searchParams, toast, brandName, industry]);
+  }, [searchParams, toast, brandName, industry, description, location]);
 
   if (loading) {
     return <AnalysisSkeleton />;
