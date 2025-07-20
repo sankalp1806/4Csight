@@ -19,7 +19,7 @@ const prompt = ai.definePrompt({
   output: {schema: Generate4CsAnalysisOutputSchema},
   prompt: `You are a strategic marketing expert specializing in 4Cs analysis (Competition, Culture, Consumer, Category).
 
-  Your task is to analyze the brand or business based on the provided information and supplement it with real-time web search to gather the most current and relevant data.
+  Your task is to analyze the brand or business based on the provided information and supplement it with **real-time web searches to gather the most current, accurate, and relevant data available.**
 
   Brand to Analyze: {{{brandName}}}
   Business Description: {{{description}}}
@@ -29,13 +29,13 @@ const prompt = ai.definePrompt({
   {{/if}}
 
   Instructions:
-  1.  **Perform Web Searches:** Use your search capabilities to find up-to-date information about the brand, its competitors, the specified industry, cultural trends, and consumer behavior. {{#if location}}Focus the search on the '{{{location}}}' region where applicable.{{/if}}
+  1.  **Perform Real-Time Web Searches:** Use your search capabilities to find the most up-to-date information about the brand, its competitors, the specified industry, cultural trends, and consumer behavior. Prioritize data from the last 12 months. {{#if location}}Focus the search on the '{{{location}}}' region where applicable.{{/if}}
   2.  **Synthesize Information:** Combine the information from your web searches with the user-provided description and industry.
   3.  **Generate 4Cs Analysis:** Provide a comprehensive analysis covering the following four areas:
-      -   **Competition:** Analyze the competitive landscape. You must identify **between 8 and 10 direct competitors**, **at least 4-5 indirect competitors**, and **at least 3 substitute competitors**. For each competitor, provide their name, type, estimated market share, a competitive rating (1-5), and a list of their key strengths and weaknesses. Use web search extensively to identify key competitors and gather this information. {{#if location}}Tailor the competitor list to the '{{{location}}}' market.{{/if}}
-      -   **Culture:** Examine prevailing cultural trends, societal values, and lifestyle shifts that could impact the brand. {{#if location}}Focus on trends relevant to '{{{location}}}'.{{/if}}
-      -   **Consumer:** Understand the target audience segments, their needs, motivations, online behavior, and perceptions. {{#if location}}Analyze consumers within '{{{location}}}'.{{/if}}
-      -   **Category:** Define and analyze the product or service category, including market size, growth trends, and key drivers of demand. {{#if location}}Provide data specific to the '{{{location}}}' market.{{/if}}
+      -   **Competition:** Analyze the competitive landscape. You must identify **between 8 and 10 direct competitors**, **at least 4-5 indirect competitors**, and **at least 3 substitute competitors**. For each competitor, provide their name, type, estimated market share, a competitive rating (1-5), and a list of their key strengths and weaknesses. Use web search extensively to identify key competitors and gather this information. Ensure all data, especially market share, is based on the latest available financial reports or market analysis. {{#if location}}Tailor the competitor list to the '{{{location}}}' market.{{/if}}
+      -   **Culture:** Examine prevailing cultural trends, societal values, and lifestyle shifts that could impact the brand, using the most current sources. {{#if location}}Focus on trends relevant to '{{{location}}}'.{{/if}}
+      -   **Consumer:** Understand the target audience segments, their needs, motivations, online behavior, and perceptions, based on the latest available data. {{#if location}}Analyze consumers within '{{{location}}}'.{{/if}}
+      -   **Category:** Define and analyze the product or service category, including market size, growth trends, and key drivers of demand, using the latest available data. {{#if location}}Provide data specific to the '{{{location}}}' market.{{/if}}
   4.  **Create Structured Executive Summary:** Based on the full analysis, create a structured **Executive Summary**.
       -   **Key Findings:**
           -   **Market Opportunities:** Clearly articulate growth opportunities based on the analysis in a single paragraph.
